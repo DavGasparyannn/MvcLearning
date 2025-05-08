@@ -38,7 +38,13 @@
                     }
                     else
                     {
-                        <p class="text-black">@User.Identity.Name</p>
+                            <li class="nav-item">
+                                <p class="text-black">@User.Identity.Name</p>
+                            </li>
+                            <li class="nav-item">
+                                <a class="btn btn-outline-danger" asp-area="Identity" asp-page="/Account/Logout">Log out</a>
+                            </li>
+                        
                     }  
                         </ul>
                 </div>

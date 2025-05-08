@@ -1,15 +1,72 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using System.Reflection.Emit;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using MvcLearning.Data.Entities;
 
 namespace MvcLearning.Data
 {
-    public class ApplicationDbContext : IdentityDbContext<IdentityUser>
+    public class ApplicationDbContext : IdentityDbContext<User>
     {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
         {
         }
+        public DbSet<Product> Products { get; set; }
+        public DbSet<Category> Categories { get; set; }
+        public DbSet<Order> Orders { get; set; }
+        public DbSet<Bucket> Buckets { get; set; }
+        public DbSet<Shop> Shops { get; set; }
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
 
-        
+            // User — Bucket (1 к 1)
+            modelBuilder.Entity<User>()
+                .HasOne(u => u.Bucket)
+                .WithOne(b => b.User)
+                .HasForeignKey<Bucket>(b => b.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            // User — Orders (1 ко многим)
+            modelBuilder.Entity<User>()
+                .HasMany(u => u.Orders)
+                .WithOne(o => o.User)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            // Bucket — Products (Many-to-Many)
+            modelBuilder.Entity<Bucket>()
+                .HasMany(b => b.Products)
+                .WithMany();
+
+            // Product — Category (Many-to-Many)
+            modelBuilder.Entity<Product>()
+                .HasMany(p => p.Categories)
+                .WithMany(c => c.Products)
+                .UsingEntity(j => j.ToTable("ProductCategories"));
+
+            // Order — Products (Many-to-Many) через простую связь
+            modelBuilder.Entity<Order>()
+                .HasMany(o => o.OrderItems)
+                .WithMany(); // можно заменить на OrderItem если нужны доп. поля
+            modelBuilder.Entity<User>()
+            .HasOne(u => u.Shop)
+            .WithOne(s => s.Owner)
+            .HasForeignKey<Shop>(s => s.OwnerId);
+
+            // Связь магазина с продуктами
+            modelBuilder.Entity<Product>()
+                .HasOne(p => p.Shop)
+                .WithMany(s => s.Products)
+                .HasForeignKey(p => p.ShopId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // Guid ID по умолчанию (если хочешь)
+            modelBuilder.Entity<User>().Property(u => u.Id).ValueGeneratedOnAdd();
+            modelBuilder.Entity<Bucket>().Property(b => b.Id).ValueGeneratedOnAdd();
+            modelBuilder.Entity<Product>().Property(p => p.Id).ValueGeneratedOnAdd();
+            modelBuilder.Entity<Category>().Property(c => c.Id).ValueGeneratedOnAdd();
+            modelBuilder.Entity<Order>().Property(o => o.Id).ValueGeneratedOnAdd();
+
+        }
     }
 }
