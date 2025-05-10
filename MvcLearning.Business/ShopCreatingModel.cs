@@ -1,15 +1,15 @@
-﻿namespace MvcLearning.Business
+﻿using System.ComponentModel.DataAnnotations;
+using System.Diagnostics.CodeAnalysis;
+
+namespace MvcLearning.Business
 {
     public class ShopCreatingModel
     {
+        [Required(ErrorMessage = "Shop name is required.")]
+        [StringLength(100, ErrorMessage = "Shop name cannot be longer than 100 characters.")]
         public string Name { get; set; }
-        public string Description { get; set; }
-        public string Address { get; set; }
-        public string PhoneNumber { get; set; }
-        public string Email { get; set; }
-        public string Website { get; set; }
-        public string ImageUrl { get; set; }
-        public int CategoryId { get; set; }
-        public int UserId { get; set; }
+        [StringLength(500, ErrorMessage = "Description cannot be longer than 500 characters.")]
+        public string Description { get; set; } = string.Empty;
+        public string ImageUrl { get; set; } = "shop_default.png";
     }
 }

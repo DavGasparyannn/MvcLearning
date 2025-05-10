@@ -23,6 +23,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\MvcLearning.Business\MvcLearning.Business.csproj" />
     <ProjectReference Include="..\MvcLearning.Data\MvcLearning.Data.csproj" />
   </ItemGroup>
 

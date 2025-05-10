@@ -17,9 +17,31 @@ namespace MvcLearning.Business
         {
             return await _shopRepository.GetAllProductsAsync();
         }*/
-        public async Task CreateShop(ShopCreatingModel shopCreatingModel)
+        public async Task CreateShopAsync(ShopCreatingModel shopCreatingModel, string ownerId, CancellationToken token = default)
         {
-
+            if (await _shopRepository.ShopExistsAsync(shopCreatingModel.Name,token))
+            {
+                throw new Exception("Shop with this name already exists");
+            }
+            var user = await _userManager.FindByIdAsync(ownerId);
+            if (user!.Shop != null)
+                throw new InvalidOperationException("You are currentrly have a shop.");
+            
+            var shop = new Shop
+            {
+                Name = shopCreatingModel.Name,
+                Description = shopCreatingModel.Description,
+                ImageUrl = shopCreatingModel.ImageUrl,
+                OwnerId = ownerId,
+                CreatedAt = DateTime.UtcNow
+            };
+            
+            await _shopRepository.CreateShopAsync(shop, token);
+        }
+        public async Task<Shop> GetShopAsync(string userId)
+        {
+            var shop = await _shopRepository.GetShopByUserIdAsync(userId, CancellationToken.None);
+            return shop;
         }
     }
 }

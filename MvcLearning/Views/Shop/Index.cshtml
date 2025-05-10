@@ -1,6 +1,29 @@
 ﻿@using Microsoft.AspNetCore.Identity
 @using MvcLearning.Data.Entities
-@{
-	
-}
+@model Shop;
 
+<h1>Shop</h1>
+<p>Welcome to the shop! Here you can find a variety of products.</p>
+<p>We have a wide selection of items available for purchase.</p>
+<p>Feel free to browse through our collection and add items to your cart.</p>
+<p>If you have any questions, don't hesitate to reach out to our support team.</p>
+<p>Happy shopping!</p>
+
+@{
+	if(Model is not null)
+	{
+		<div>
+			<h1>@Model.Name</h1>
+			<p>@Model.Description</p>
+			<p>Created : @Model.CreatedAt</p>
+		</div>
+
+		<a asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-danger">Delete Shop</a>
+
+	}
+	else
+	{
+		<p>You don't have a shop yet.</p>
+		<a asp-action="Create" class="btn btn-primary">Create Shop</a>
+	}
+}

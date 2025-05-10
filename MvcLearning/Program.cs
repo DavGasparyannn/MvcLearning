@@ -1,7 +1,10 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using MvcLearning.Business;
 using MvcLearning.Data;
 using MvcLearning.Data.Entities;
+using MvcLearning.Data.Interfaces;
+using MvcLearning.Data.Repositories;
 var builder = WebApplication.CreateBuilder(args);
 var connectionString = builder.Configuration.GetConnectionString("ApplicationDbContextConnection") ?? throw new InvalidOperationException("Connection string 'ApplicationDbContextConnection' not found.");
 
@@ -11,6 +14,11 @@ builder.Services.AddDefaultIdentity<User>(options => options.SignIn.RequireConfi
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+
+builder.Services.AddScoped<IShopRepository, ShopRepository>();
+
+builder.Services.AddScoped<ShopService>();
+
 
 var app = builder.Build();
 

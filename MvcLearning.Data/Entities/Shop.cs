@@ -11,6 +11,8 @@ namespace MvcLearning.Data.Entities
         public Guid Id { get; set; }  // Уникальный идентификатор магазина
         public string Name { get; set; } = string.Empty;  // Название магазина
         public string Description { get; set; } = string.Empty;  // Описание магазина
+        public string ImageUrl { get; set; } = "shop_default.png";
+
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;  // Дата создания магазина
 
         // Владелец магазина (ссылка на пользователя, который является владельцем магазина)

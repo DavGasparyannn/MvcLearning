@@ -22,11 +22,11 @@ namespace MvcLearning.Data.Repositories
         }
         public async Task<Shop> GetShopByIdAsync(Guid id, CancellationToken token)
         {
-            return await _context.Shops.FindAsync(id,token) ?? throw  new Exception("Shop does not found");
+            return await _context.Shops.FindAsync(id,token) ?? null;
         }
         public async Task<Shop> GetShopByUserIdAsync(string userId, CancellationToken token)
         {
-            return await _context.Shops.FirstOrDefaultAsync(s => s.OwnerId == userId, token) ?? throw new Exception("Shop does not found");
+            return await _context.Shops.FirstOrDefaultAsync(s => s.OwnerId == userId, token) ?? null;
         }
         public async Task<Shop> CreateShopAsync(Shop shop, CancellationToken token)
         {
@@ -46,9 +46,9 @@ namespace MvcLearning.Data.Repositories
             _context.Shops.Remove(shop);
             await _context.SaveChangesAsync(token);
         }
-        public async Task<bool> ShopExistsAsync(Guid id, CancellationToken token)
+        public async Task<bool> ShopExistsAsync(string name, CancellationToken token)
         {
-            return await _context.Shops.AnyAsync(s => s.Id == id, token);
+            return await _context.Shops.AnyAsync(s => s.Name == name, token);
         }
 
 
