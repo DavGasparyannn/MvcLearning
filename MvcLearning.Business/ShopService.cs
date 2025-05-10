@@ -38,6 +38,16 @@ namespace MvcLearning.Business
             
             await _shopRepository.CreateShopAsync(shop, token);
         }
+        public async Task DeleteShopAsync(Guid shopId, string ownerId,CancellationToken token = default)
+        {
+            var shop = await _shopRepository.GetShopByIdAsync(shopId, token);
+            if (shop == null)
+                throw new InvalidOperationException("Shop not found.");
+            if (shop.OwnerId != ownerId)
+                throw new InvalidOperationException("You are not the owner of this shop.");
+
+            await _shopRepository.DeleteShopAsync(shopId, token);
+        }
         public async Task<Shop> GetShopAsync(string userId)
         {
             var shop = await _shopRepository.GetShopByUserIdAsync(userId, CancellationToken.None);

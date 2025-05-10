@@ -44,5 +44,20 @@ namespace MvcLearning.Controllers
                 return View(model);
             }
         }
+        [HttpPost]
+        public async Task<IActionResult> Delete(Guid id)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            try
+            {
+                await _shopService.DeleteShopAsync(id, userId);
+                return RedirectToAction("Index");
+            }   
+            catch (InvalidOperationException ex)
+            {
+                TempData["Error"] = ex.Message;
+                return RedirectToAction("Index");
+            }
+        }
     }
 }
