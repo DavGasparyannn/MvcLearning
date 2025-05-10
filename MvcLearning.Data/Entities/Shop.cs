@@ -20,9 +20,9 @@ namespace MvcLearning.Data.Entities
         public User Owner { get; set; }  // Навигационное свойство для владельца магазина
 
         // Список товаров, которые принадлежат магазину
-        public IEnumerable<Product> Products { get; set; } = new List<Product>();
+        public List<Product> Products { get; set; } = new List<Product>();  // Инициализация пустым списком
 
         // Список клиентов, которые когда-либо делали покупки в этом магазине
-        public IEnumerable<User> Customers { get; set; } = new List<User>();
+        public List<User> Customers { get; set; } = new List<User>();
     }
 }

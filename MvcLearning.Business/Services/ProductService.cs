@@ -18,16 +18,19 @@ namespace MvcLearning.Business.Services
             _productRepository = productRepository;
             _shopRepository = shopRepository;
         }
-        public async Task AddProductAsync(ProductAddingModel productAddingModel, CancellationToken token = default)
+        public async Task AddProductAsync(ProductAddingModel productAddingModel,Guid shopId, CancellationToken token = default)
         {
             var product = new Product
             {
                 Name = productAddingModel.Name,
                 Description = productAddingModel.Description,
                 Price = productAddingModel.Price,
-                ImageUrls = productAddingModel.ImageUrls
+                ImageUrls = productAddingModel.ImageUrls,
+                ShopId = shopId,
             };
             await _productRepository.AddAsync(product, token);
+            await _shopRepository.AddProductToShopAsync(shopId, product, token);
+
         }
     }
 }

@@ -15,9 +15,9 @@ namespace MvcLearning.Data.Repositories
         {
             _context = context;
         }
-        public async Task AddAsync(Product shop, CancellationToken token)
+        public async Task AddAsync(Product product, CancellationToken token)
         {
-            await _context.Products.AddAsync(shop, token);
+            await _context.Products.AddAsync(product, token);
             await _context.SaveChangesAsync(token);
         }
     }

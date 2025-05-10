@@ -17,7 +17,7 @@ namespace MvcLearning.Data.Entities
         public string? LastLoginIpAddress { get; set; }
         public Bucket Bucket { get; set; }
         public Shop Shop { get; set; }
-        public IEnumerable<Order>? Orders { get; set; }
+        public List<Order>? Orders { get; set; }
 
     }
 }

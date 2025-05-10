@@ -1,5 +1,4 @@
-﻿using System.Reflection.Emit;
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using MvcLearning.Data.Entities;
@@ -11,11 +10,15 @@ namespace MvcLearning.Data
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
         {
         }
+
         public DbSet<Product> Products { get; set; }
         public DbSet<Category> Categories { get; set; }
         public DbSet<Order> Orders { get; set; }
         public DbSet<Bucket> Buckets { get; set; }
         public DbSet<Shop> Shops { get; set; }
+
+        // ... остальные using и код без изменений ...
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -44,29 +47,39 @@ namespace MvcLearning.Data
                 .WithMany(c => c.Products)
                 .UsingEntity(j => j.ToTable("ProductCategories"));
 
-            // Order — Products (Many-to-Many) через простую связь
+            // Order — Products (Many-to-Many)
             modelBuilder.Entity<Order>()
                 .HasMany(o => o.OrderItems)
-                .WithMany(); // можно заменить на OrderItem если нужны доп. поля
-            modelBuilder.Entity<User>()
-            .HasOne(u => u.Shop)
-            .WithOne(s => s.Owner)
-            .HasForeignKey<Shop>(s => s.OwnerId);
+                .WithMany();
 
-            // Связь магазина с продуктами
+            // User — Shop (1 к 1)
+            modelBuilder.Entity<User>()
+                .HasOne(u => u.Shop)
+                .WithOne(s => s.Owner)
+                .HasForeignKey<Shop>(s => s.OwnerId);
+
+            // Shop — Products (1 ко многим)
             modelBuilder.Entity<Product>()
                 .HasOne(p => p.Shop)
                 .WithMany(s => s.Products)
                 .HasForeignKey(p => p.ShopId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            // Guid ID по умолчанию (если хочешь)
+            // Shop — Customers (Many-to-Many)
+            modelBuilder.Entity<Shop>()
+                .HasMany(s => s.Customers)
+                .WithMany()
+                .UsingEntity<Dictionary<string, object>>(
+                    "ShopCustomers",
+                    j => j.HasOne<User>().WithMany().HasForeignKey("CustomersId").OnDelete(DeleteBehavior.Cascade),
+                    j => j.HasOne<Shop>().WithMany().HasForeignKey("ShopId").OnDelete(DeleteBehavior.NoAction));
+
+            // Guid ID по умолчанию
             modelBuilder.Entity<User>().Property(u => u.Id).ValueGeneratedOnAdd();
             modelBuilder.Entity<Bucket>().Property(b => b.Id).ValueGeneratedOnAdd();
             modelBuilder.Entity<Product>().Property(p => p.Id).ValueGeneratedOnAdd();
             modelBuilder.Entity<Category>().Property(c => c.Id).ValueGeneratedOnAdd();
             modelBuilder.Entity<Order>().Property(o => o.Id).ValueGeneratedOnAdd();
-
         }
     }
 }

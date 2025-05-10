@@ -14,50 +14,47 @@ namespace MvcLearning.Controllers
             _productService = productService;
             _shopService = shopService;
         }
-        public async Task<IActionResult> Create(string userId)
+        public async Task<IActionResult> Create(Guid shopId)
         {
-            var shop = await _shopService.GetShopAsync(userId);
-            if (shop == null || shop.OwnerId != userId)
-            {
-                return NotFound();
-            }
+            var shop = await _shopService.GetShopAsync(shopId);
+            
             ViewData["ShopId"] = shop.Id;
             return View();
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(ProductAddingModel model, string userId, CancellationToken token = default)
+        public async Task<IActionResult> Create(ProductAddingModel model, Guid shopId, CancellationToken token = default)
         {
+                var shop = await _shopService.GetShopAsync(shopId);
             if (!ModelState.IsValid)
             {
-                var shop = await _shopService.GetShopAsync(userId);
                 ViewData["ShopId"] = shop?.Id;
-                ViewData["UserId"] = userId;
+                ViewData["UserId"] = shop!.OwnerId;
                 return View(model);
             }
 
             try
             {
                 var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-                if (userId != currentUserId)
+                var ownerId = shop.OwnerId;
+                if (ownerId != currentUserId)
                 {
                     return NotFound();
                 }
 
-                var shop = await _shopService.GetShopAsync(userId);
                 if (shop == null)
                 {
                     return NotFound();
                 }
 
-                await _productService.AddProductAsync(model, token); // Передаём shop.Id
+                await _productService.AddProductAsync(model,shopId, token); // Передаём shop.Id
                 return RedirectToAction("Index", "Shop");
             }
             catch (InvalidOperationException ex)
             {
                 ModelState.AddModelError("", ex.Message);
-                ViewData["UserId"] = userId;
+                ViewData["UserId"] = shop.OwnerId;
                 return View(model);
             }
         }

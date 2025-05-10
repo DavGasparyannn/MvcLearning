@@ -49,6 +49,11 @@ namespace MvcLearning.Business.Services
 
             await _shopRepository.DeleteShopAsync(shopId, token);
         }
+        public async Task<Shop> GetShopAsync(Guid shopId)
+        {
+            var shop = await _shopRepository.GetShopByIdAsync(shopId, CancellationToken.None);
+            return shop;
+        }
         public async Task<Shop> GetShopAsync(string userId)
         {
             var shop = await _shopRepository.GetShopByUserIdAsync(userId, CancellationToken.None);

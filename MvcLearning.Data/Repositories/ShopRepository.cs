@@ -18,15 +18,15 @@ namespace MvcLearning.Data.Repositories
         }
         public async Task<IEnumerable<Shop>> GetAllShopsAsync(CancellationToken token)
         {
-            return await _context.Shops.ToListAsync(token);
+            return await _context.Shops.Include(s => s.Products).ToListAsync(token);
         }
         public async Task<Shop> GetShopByIdAsync(Guid id, CancellationToken token)
         {
-            return await _context.Shops.FindAsync(id,token) ?? null;
+            return await _context.Shops.Include(s => s.Products).FirstOrDefaultAsync(s=>s.Id == id) ?? null;
         }
         public async Task<Shop> GetShopByUserIdAsync(string userId, CancellationToken token)
         {
-            return await _context.Shops.FirstOrDefaultAsync(s => s.OwnerId == userId, token) ?? null;
+            return await _context.Shops.Include(s => s.Products).FirstOrDefaultAsync(s => s.OwnerId == userId, token) ?? null;
         }
         public async Task<Shop> CreateShopAsync(Shop shop, CancellationToken token)
         {
@@ -51,7 +51,16 @@ namespace MvcLearning.Data.Repositories
             return await _context.Shops.AnyAsync(s => s.Name == name, token);
         }
 
+        public async Task AddProductToShopAsync(Guid shopId, Product product, CancellationToken token)
+        {
+            var shop = await GetShopByIdAsync(shopId, token);
+            if (shop == null)
+                throw new InvalidOperationException("Shop not found.");
+            if (product == null)
+                throw new InvalidOperationException("Product not found.");
 
-
+            shop.Products.Add(product);
+            await _context.SaveChangesAsync(token);
+        }
     }
 }

@@ -16,6 +16,6 @@ namespace MvcLearning.Data.Interfaces
         Task<Shop> UpdateShopAsync(Shop shop, CancellationToken token);
         Task DeleteShopAsync(Guid id, CancellationToken token);
         Task<bool> ShopExistsAsync(string id, CancellationToken token);
-
+        Task AddProductToShopAsync(Guid shopId, Product product, CancellationToken token);
     }
 }

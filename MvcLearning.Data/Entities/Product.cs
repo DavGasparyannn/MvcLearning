@@ -15,11 +15,11 @@ namespace MvcLearning.Data.Entities
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
         public bool IsDeleted { get; set; } = false;
-        public IEnumerable<string>? ImageUrls { get; set; }
+        public List<string>? ImageUrls { get; set; }
         public Guid ShopId { get; set; }
         public Shop Shop { get; set; }
         public Guid CategoryId { get; set; }
-        public IEnumerable<Category>? Categories { get; set; }
+        public List<Category>? Categories { get; set; }
 
 
 

@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using MvcLearning.Data;
 
@@ -11,9 +12,11 @@ using MvcLearning.Data;
 namespace MvcLearning.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250510224052_fix")]
+    partial class fix
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -388,6 +391,9 @@ namespace MvcLearning.Data.Migrations
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<Guid?>("ShopId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<bool>("TwoFactorEnabled")
                         .HasColumnType("bit");
 
@@ -405,6 +411,8 @@ namespace MvcLearning.Data.Migrations
                         .HasDatabaseName("UserNameIndex")
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
+                    b.HasIndex("ShopId");
+
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
@@ -421,21 +429,6 @@ namespace MvcLearning.Data.Migrations
                     b.HasIndex("OrderItemsId");
 
                     b.ToTable("OrderProduct");
-                });
-
-            modelBuilder.Entity("ShopCustomers", b =>
-                {
-                    b.Property<string>("CustomersId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<Guid>("ShopId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("CustomersId", "ShopId");
-
-                    b.HasIndex("ShopId");
-
-                    b.ToTable("ShopCustomers");
                 });
 
             modelBuilder.Entity("BucketProduct", b =>
@@ -562,6 +555,13 @@ namespace MvcLearning.Data.Migrations
                     b.Navigation("Owner");
                 });
 
+            modelBuilder.Entity("MvcLearning.Data.Entities.User", b =>
+                {
+                    b.HasOne("MvcLearning.Data.Entities.Shop", null)
+                        .WithMany("Customers")
+                        .HasForeignKey("ShopId");
+                });
+
             modelBuilder.Entity("OrderProduct", b =>
                 {
                     b.HasOne("MvcLearning.Data.Entities.Order", null)
@@ -577,23 +577,10 @@ namespace MvcLearning.Data.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("ShopCustomers", b =>
-                {
-                    b.HasOne("MvcLearning.Data.Entities.User", null)
-                        .WithMany()
-                        .HasForeignKey("CustomersId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("MvcLearning.Data.Entities.Shop", null)
-                        .WithMany()
-                        .HasForeignKey("ShopId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("MvcLearning.Data.Entities.Shop", b =>
                 {
+                    b.Navigation("Customers");
+
                     b.Navigation("Products");
                 });
 
