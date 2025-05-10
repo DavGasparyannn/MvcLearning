@@ -2,7 +2,8 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using MvcLearning.Business;
+using MvcLearning.Business.Models.Shop;
+using MvcLearning.Business.Services;
 using MvcLearning.Data.Entities;
 
 namespace MvcLearning.Controllers

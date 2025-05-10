@@ -1,8 +1,9 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using MvcLearning.Business.Models.Shop;
 using MvcLearning.Data.Entities;
 using MvcLearning.Data.Interfaces;
 
-namespace MvcLearning.Business
+namespace MvcLearning.Business.Services
 {
     public class ShopService
     {

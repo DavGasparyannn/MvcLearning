@@ -1,10 +1,10 @@
-﻿@using MvcLearning.Business
-@using MvcLearning.Business.Models.Shop
-@model ShopCreatingModel
+﻿@using MvcLearning.Business.Models.Product
 
-<h1>Create Shop</h1>
+@model ProductAddingModel
 
-<form asp-action="Create" method="post">
+<h1>Add Product</h1>
+
+<form asp-action="Create" asp-route-shopId="@ViewData["ShopId"]" method="post">
     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
     <div class="form-group">
         <label asp-for="Name"></label>
@@ -16,7 +16,12 @@
         <textarea asp-for="Description" class="form-control"></textarea>
         <span asp-validation-for="Description" class="text-danger"></span>
     </div>
-    <button type="submit" class="btn btn-primary">Create</button>
+    <div class="form-group">
+        <label asp-for="Price"></label>
+        <input asp-for="Price" class="form-control" type="number" step="0.01" />
+        <span asp-validation-for="Price" class="text-danger"></span>
+    </div>
+    <button type="submit" class="btn btn-primary">Add Product</button>
 </form>
 
 @section Scripts {

@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.Diagnostics.CodeAnalysis;
 
-namespace MvcLearning.Business
+namespace MvcLearning.Business.Models.Shop
 {
     public class ShopCreatingModel
     {

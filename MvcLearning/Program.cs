@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using MvcLearning.Business;
+using MvcLearning.Business.Services;
 using MvcLearning.Data;
 using MvcLearning.Data.Entities;
 using MvcLearning.Data.Interfaces;
@@ -16,7 +16,8 @@ builder.Services.AddDefaultIdentity<User>(options => options.SignIn.RequireConfi
 builder.Services.AddControllersWithViews();
 
 builder.Services.AddScoped<IShopRepository, ShopRepository>();
-
+builder.Services.AddScoped<IProductRepository, ProductRepository>();
+builder.Services.AddScoped<ProductService>();
 builder.Services.AddScoped<ShopService>();
 
 
