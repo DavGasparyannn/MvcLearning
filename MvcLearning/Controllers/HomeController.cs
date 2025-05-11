@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using MvcLearning.Business.Services;
 using MvcLearning.Data.Entities;
 using MvcLearning.Models;
 
@@ -10,17 +11,19 @@ namespace MvcLearning.Controllers
     {
         private readonly ILogger<HomeController> _logger;
         private readonly UserManager<User> _userManager;
+        private readonly ProductService _productService;
 
-        public HomeController(ILogger<HomeController> logger , UserManager<User> userManager)
+        public HomeController(ILogger<HomeController> logger , UserManager<User> userManager,ProductService productService)
         {
             _userManager = userManager;
             _logger = logger;
+            _productService = productService;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            
-            return View();
+            var products = await _productService.GetAllProducts();
+            return View(products);
         }
 
         public IActionResult Privacy()

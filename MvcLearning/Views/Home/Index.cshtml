@@ -1,8 +1,21 @@
-﻿@{
+﻿@using MvcLearning.Data.Entities
+@{
     ViewData["Title"] = "Home Page";
 }
-
+@model List<Product>
 <div class="text-center">
     <h1 class="display-4">Welcome</h1>
     <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+</div>
+<div>
+	@foreach (var item in Model)
+	{
+		<div>
+			<h3>@item.Name</h3>
+			<p>@item.Description</p>
+			<p>Price: @item.Price.ToString("C")</p>
+			<p>Shop: @item.Shop?.Name</p>
+			<a asp-action="Details" asp-controller="Product" asp-route-productId="@item.Id">View Details</a>
+		</div>
+	})
 </div>

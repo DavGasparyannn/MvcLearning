@@ -45,7 +45,7 @@ namespace MvcLearning.Business.Services
         public async Task<List<Product>> GetAllProducts(CancellationToken token = default)
         {
             var products = await _productRepository.GetAllProducts(token);
-            return (List<Product>)products.Take(10);
+            return products.Take(10).ToList();
         }
     }
 }
