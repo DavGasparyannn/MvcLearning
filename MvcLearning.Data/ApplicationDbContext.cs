@@ -74,6 +74,15 @@ namespace MvcLearning.Data
                     j => j.HasOne<User>().WithMany().HasForeignKey("CustomersId").OnDelete(DeleteBehavior.Cascade),
                     j => j.HasOne<Shop>().WithMany().HasForeignKey("ShopId").OnDelete(DeleteBehavior.NoAction));
 
+            // Seed data for roles
+            modelBuilder.Entity<IdentityRole>().HasData(
+                new IdentityRole
+                {
+                    Id = Guid.NewGuid().ToString(),
+                    Name = "ShopOwner",
+                    NormalizedName = "SHOPOWNER"
+                }
+            );
             // Guid ID по умолчанию
             modelBuilder.Entity<User>().Property(u => u.Id).ValueGeneratedOnAdd();
             modelBuilder.Entity<Bucket>().Property(b => b.Id).ValueGeneratedOnAdd();

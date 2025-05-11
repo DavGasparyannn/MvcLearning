@@ -6,7 +6,7 @@ using MvcLearning.Business.Services;
 
 namespace MvcLearning.Controllers
 {
-    [Authorize]
+    [Authorize(Roles = "ShopOwner")]
     public class ProductController : Controller
     {
         private readonly ProductService _productService;
@@ -66,7 +66,7 @@ namespace MvcLearning.Controllers
             if (product == null)
             {
                 return NotFound();
-            }
+            }   
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var shop = await _shopService.GetShopAsync(userId);
             if (shop == null || product.ShopId != shop.Id)
@@ -74,6 +74,21 @@ namespace MvcLearning.Controllers
                 return Forbid(); 
             }
             return View(product);
+        }
+        [HttpPost]
+        public async Task<IActionResult> Delete(Guid productId)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            try
+            {
+                await _productService.Delete(productId);
+                return RedirectToAction("Index", "Shop");
+            }
+            catch (InvalidOperationException ex)
+            {
+                TempData["Error"] = ex.Message;
+                return RedirectToAction("Index","Shop");
+            }
         }
     }
 }

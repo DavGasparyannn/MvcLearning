@@ -8,7 +8,7 @@ using MvcLearning.Data.Entities;
 
 namespace MvcLearning.Controllers
 {
-    [Authorize]
+    [Authorize(Roles = "ShopOwner")]
     public class ShopController : Controller
     {
         private readonly ShopService _shopService;

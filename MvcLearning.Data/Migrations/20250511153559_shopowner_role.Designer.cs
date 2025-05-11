@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using MvcLearning.Data;
 
@@ -11,9 +12,11 @@ using MvcLearning.Data;
 namespace MvcLearning.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250511153559_shopowner_role")]
+    partial class shopowner_role
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -81,7 +84,7 @@ namespace MvcLearning.Data.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "72564700-bc98-4337-8572-99d85402f05f",
+                            Id = "shopowner-role-id",
                             Name = "ShopOwner",
                             NormalizedName = "SHOPOWNER"
                         });

@@ -29,7 +29,7 @@
 					@foreach (var product in Model.Products)
 					{
 						<li>
-							<a asp-controller="Product" asp-action="Details" asp-route-id="@product.Id">@product.Name</a>
+							<a asp-controller="Product" asp-action="Details" asp-route-productId="@product.Id">@product.Name</a>
 						</li>
 					}
 				</ul>

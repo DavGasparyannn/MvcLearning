@@ -59,5 +59,6 @@ namespace MvcLearning.Business.Services
             var shop = await _shopRepository.GetShopByUserIdAsync(userId, CancellationToken.None);
             return shop;
         }
+
     }
 }

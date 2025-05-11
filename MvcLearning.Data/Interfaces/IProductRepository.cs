@@ -11,5 +11,7 @@ namespace MvcLearning.Data.Interfaces
     {
         Task AddAsync(Product shop, CancellationToken token);
         Task<Product?> GetProductAsync(Guid id, CancellationToken token);
+        Task DeleteProduct(Guid id, CancellationToken token);
+        Task<List<Product>> GetAllProducts(CancellationToken token);
     }
 }
