@@ -35,12 +35,18 @@ namespace MvcLearning.Data.Repositories
 
         public async Task<List<Product>> GetAllProducts(CancellationToken token)
         {
-            return await _context.Products.ToListAsync(token);
+            return await _context.Products
+                .Include(p => p.Shop)
+                .Include(p => p.Shop.Owner)
+                .ToListAsync(token);
         }
 
         public async Task<Product?> GetProductAsync(Guid id, CancellationToken token)
         {
-            return await _context.Products.FindAsync(id, token);
+            return await _context.Products
+                .Include(p => p.Shop)
+                .Include(p => p.Shop.Owner)
+                .FirstOrDefaultAsync(p => p.Id == id,token);
         }
     }
 }

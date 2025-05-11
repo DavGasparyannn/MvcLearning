@@ -60,6 +60,7 @@ namespace MvcLearning.Controllers
                 return View(model);
             }
         }
+        [AllowAnonymous]
         public async Task<IActionResult> Details(Guid productId)
         {
            var product = await _productService.GetProduct(productId);
@@ -68,11 +69,7 @@ namespace MvcLearning.Controllers
                 return NotFound();
             }   
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var shop = await _shopService.GetShopAsync(userId);
-            if (shop == null || product.ShopId != shop.Id)
-            {
-                return Forbid(); 
-            }
+
             return View(product);
         }
         [HttpPost]

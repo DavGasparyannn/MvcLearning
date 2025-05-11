@@ -22,11 +22,17 @@ namespace MvcLearning.Data.Repositories
         }
         public async Task<Shop> GetShopByIdAsync(Guid id, CancellationToken token)
         {
-            return await _context.Shops.Include(s => s.Products).FirstOrDefaultAsync(s=>s.Id == id) ?? null;
+            return await _context.Shops
+                .Include(s => s.Products)
+                .Include(s => s.Owner)
+                .FirstOrDefaultAsync(s=>s.Id == id) ?? null;
         }
         public async Task<Shop> GetShopByUserIdAsync(string userId, CancellationToken token)
         {
-            return await _context.Shops.Include(s => s.Products).FirstOrDefaultAsync(s => s.OwnerId == userId, token) ?? null;
+            return await _context.Shops
+                .Include(s => s.Products)
+                .Include(s => s.Owner)
+                .FirstOrDefaultAsync(s => s.OwnerId == userId, token) ?? null;
         }
         public async Task<Shop> CreateShopAsync(Shop shop, CancellationToken token)
         {
