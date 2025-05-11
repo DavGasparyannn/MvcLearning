@@ -32,5 +32,10 @@ namespace MvcLearning.Business.Services
             await _shopRepository.AddProductToShopAsync(shopId, product, token);
 
         }
+
+        public async Task<Product?> GetProduct(Guid productId,CancellationToken token = default)
+        {
+            return await _productRepository.GetProductAsync(productId,token);
+        }
     }
 }

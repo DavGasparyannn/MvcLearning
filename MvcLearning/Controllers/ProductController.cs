@@ -1,10 +1,12 @@
 ﻿using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MvcLearning.Business.Models.Product;
 using MvcLearning.Business.Services;
 
 namespace MvcLearning.Controllers
 {
+    [Authorize]
     public class ProductController : Controller
     {
         private readonly ProductService _productService;
@@ -57,6 +59,21 @@ namespace MvcLearning.Controllers
                 ViewData["UserId"] = shop.OwnerId;
                 return View(model);
             }
+        }
+        public async Task<IActionResult> Details(Guid productId)
+        {
+           var product = await _productService.GetProduct(productId);
+            if (product == null)
+            {
+                return NotFound();
+            }
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var shop = await _shopService.GetShopAsync(userId);
+            if (shop == null || product.ShopId != shop.Id)
+            {
+                return Forbid(); 
+            }
+            return View(product);
         }
     }
 }

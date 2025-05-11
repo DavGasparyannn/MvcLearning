@@ -20,5 +20,10 @@ namespace MvcLearning.Data.Repositories
             await _context.Products.AddAsync(product, token);
             await _context.SaveChangesAsync(token);
         }
+
+        public async Task<Product?> GetProductAsync(Guid id, CancellationToken token)
+        {
+            return await _context.Products.FindAsync(id, token);
+        }
     }
 }

@@ -10,5 +10,6 @@ namespace MvcLearning.Data.Interfaces
     public interface IProductRepository
     {
         Task AddAsync(Product shop, CancellationToken token);
+        Task<Product?> GetProductAsync(Guid id, CancellationToken token);
     }
 }
