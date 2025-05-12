@@ -45,5 +45,7 @@ else
         <p>Total Count: @totalCount</p>
     </div>
 }
-
+<form asp-action="Create" asp-controller="Order" method="post">
+    <button type="submit" class="btn btn-success">Place Order</button>
+</form>
 <a asp-action="Index" asp-controller="Home" class="btn btn-primary">Back</a>

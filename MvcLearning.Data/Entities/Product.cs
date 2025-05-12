@@ -21,6 +21,7 @@ namespace MvcLearning.Data.Entities
         public Guid CategoryId { get; set; }
         public List<Category>? Categories { get; set; }
         public List<Bucket>? Buckets { get; set; }
+        public List<OrderItem> OrderItems { get; set; }
 
 
     }

@@ -16,6 +16,7 @@ namespace MvcLearning.Data
         public DbSet<Order> Orders { get; set; }
         public DbSet<Bucket> Buckets { get; set; }
         public DbSet<Shop> Shops { get; set; }
+        public DbSet<OrderItem> OrderItems { get; set; }
         public DbSet<BucketProduct> BucketProducts { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -60,10 +61,23 @@ namespace MvcLearning.Data
                 .WithMany(c => c.Products)
                 .UsingEntity(j => j.ToTable("ProductCategories"));
 
-            // Order — Products (Many-to-Many)
+            // Order — OrderItems (1 ко многим)
             modelBuilder.Entity<Order>()
                 .HasMany(o => o.OrderItems)
-                .WithMany();
+                .WithOne(oi => oi.Order)
+                .HasForeignKey(oi => oi.OrderId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            // Product — OrderItems (1 ко многим)
+            modelBuilder.Entity<Product>()
+                .HasMany(p => p.OrderItems)
+                .WithOne(oi => oi.Product)
+                .HasForeignKey(oi => oi.ProductId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // Первичный ключ
+            modelBuilder.Entity<OrderItem>()
+                .HasKey(oi => oi.Id);
 
             // User — Shop (1 к 1)
             modelBuilder.Entity<User>()

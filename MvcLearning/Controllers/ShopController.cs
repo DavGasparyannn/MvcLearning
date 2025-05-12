@@ -12,10 +12,12 @@ namespace MvcLearning.Controllers
     public class ShopController : Controller
     {
         private readonly ShopService _shopService;
+        private readonly OrderService _orderService;
         private readonly UserManager<User> _userManager;
-        public ShopController(ShopService shopService,UserManager<User> userManager)
+        public ShopController(ShopService shopService,OrderService orderService,UserManager<User> userManager)
         {
             _shopService = shopService;
+            _orderService = orderService;
             _userManager = userManager;
         }
         public IActionResult Index()
@@ -23,6 +25,11 @@ namespace MvcLearning.Controllers
             var user = _userManager.GetUserAsync(User).Result;
             var shop = _shopService.GetShopAsync(user!.Id).Result;
             return View(shop);
+        }
+        public async Task<IActionResult> Orders(Guid shopId,CancellationToken token)
+        {
+            var orders = await _orderService.GetOrdersByShopIdAsync(shopId, token);
+            return View(orders);
         }
         public IActionResult Create()
         {

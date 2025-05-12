@@ -22,9 +22,12 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddScoped<IShopRepository, ShopRepository>();
 builder.Services.AddScoped<IProductRepository, ProductRepository>();
 builder.Services.AddScoped<IBucketRepository, BucketRepository>();
+builder.Services.AddScoped<IOrderRepository, OrderRepository>();
+
 builder.Services.AddScoped<ProductService>();
 builder.Services.AddScoped<ShopService>();
 builder.Services.AddScoped<BucketService>();
+builder.Services.AddScoped<OrderService>();
 builder.Services.AddRazorPages();
 
 
