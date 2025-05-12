@@ -1,0 +1,30 @@
+﻿@model List<MvcLearning.Data.Entities.Order>
+
+<h2>Мои заказы</h2>
+
+<table>
+    <thead>
+        <tr>
+            <th>Номер заказа</th>
+            <th>Пользователь</th>
+            <th>Дата заказа</th>
+            <th>Статус</th>
+            <th>Действия</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var order in Model)
+        {
+            <tr>
+                <td>@order.Id</td>
+                <td>@order.User.UserName</td>
+                <td>@order.OrderingTime</td>
+                <td>@order.Status</td>
+                <td>
+                    <a href="@Url.Action("Details", "Order", new { orderId = order.Id })">Подробнее</a>
+                    <a href="@Url.Action("ChangeStatus", "ShopOrder", new { orderId = order.Id })">Изменить статус</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

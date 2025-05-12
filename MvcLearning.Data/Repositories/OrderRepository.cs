@@ -30,21 +30,29 @@ namespace MvcLearning.Data.Repositories
             {
                 User = user,
                 Status = OrderStatus.Pending,
+                
                 OrderingTime = DateTime.UtcNow,
                 TotalAmount = bucket.BucketProducts.Sum(bp => bp.Quantity * bp.Product.Price),
                 OrderItems = new List<OrderItem>()
+
             };
             foreach (var bp in bucket.BucketProducts)
-            {
-                order.OrderItems.Add(new OrderItem
-                {
-                    Id = Guid.NewGuid(),
-                    Order = order,
-                    ProductId = bp.Product.Id,
-                    Quantity = bp.Quantity,
-                    PriceAtPurchaseTime = bp.Product.Price
-                });
-            }
+{
+    var product = await _context.Products
+        .FirstOrDefaultAsync(p => p.Id == bp.Product.Id, token);
+
+    if (product == null)
+        throw new Exception($"Product with ID {bp.Product.Id} not found");
+
+    order.OrderItems.Add(new OrderItem
+    {
+        Id = Guid.NewGuid(),
+        Order = order,
+        ProductId = product.Id,
+        Quantity = bp.Quantity,
+        PriceAtPurchaseTime = product.Price
+    });
+}
             await _context.Orders.AddAsync(order);
             await _context.SaveChangesAsync(token);
             return order;

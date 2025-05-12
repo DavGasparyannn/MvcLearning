@@ -12,10 +12,12 @@ namespace MvcLearning.Business.Services
     {
         private readonly IOrderRepository _orderRepository;
         private readonly IBucketRepository _bucketRepository;
-        public OrderService(IOrderRepository orderRepository, IBucketRepository bucketRepository)
+        private readonly IShopRepository _shopRepository;
+        public OrderService(IOrderRepository orderRepository, IBucketRepository bucketRepository, IShopRepository shopRepository)
         {
             _orderRepository = orderRepository;
             _bucketRepository = bucketRepository;
+            _shopRepository = shopRepository;
         }
         public async Task<Order> CreateOrderFromUserBucketAsync(string userId,CancellationToken token = default)
         {
@@ -31,9 +33,9 @@ namespace MvcLearning.Business.Services
             return await _orderRepository.GetOrderByIdAsync(orderId, token);
         }
 
-        public async Task<string?> GetOrdersByShopIdAsync(Guid shopId, CancellationToken token)
+        public async Task<List<Order>?> GetOrdersByShopIdAsync(Guid shopId, CancellationToken token)
         {
-            throw new NotImplementedException();
+            return await _shopRepository.GetOrdersByShopId(shopId, token);
         }
 
         public async Task<List<OrderDetailsDTO>?> GetOrdersByUserIdAsync(string userId, CancellationToken token)

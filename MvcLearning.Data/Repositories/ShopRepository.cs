@@ -68,5 +68,15 @@ namespace MvcLearning.Data.Repositories
             shop.Products.Add(product);
             await _context.SaveChangesAsync(token);
         }
+        public async Task<List<Order>> GetOrdersByShopId(Guid shopId, CancellationToken token)
+        {
+            var orders = await _context.Orders
+        .Include(o => o.OrderItems)
+            .ThenInclude(oi => oi.Product)
+        .Where(o => o.OrderItems.Any(oi => oi.Product.ShopId == shopId))
+        .ToListAsync(token);
+
+            return orders;
+        }
     }
 }
