@@ -28,11 +28,25 @@ namespace MvcLearning.Data.Repositories
 
         public async Task<Bucket> GetBucketByUserId(string userId, CancellationToken token)
         {
-            return await _context.Buckets
-                .Include(b => b.Products)
-                .FirstOrDefaultAsync(b => b.UserId == userId, token) ?? null;
-        }
+            var bucket = await _context.Buckets
+                .Include(b => b.BucketProducts)
+                    .ThenInclude(bp => bp.Product)
+                        .ThenInclude(p => p.Shop)
+                .AsNoTracking()
+                .FirstOrDefaultAsync(b => b.UserId == userId, token);
 
+            // Отладка
+            if (bucket != null)
+            {
+                Console.WriteLine($"Bucket ID: {bucket.Id}, BucketProducts Count: {bucket.BucketProducts?.Count ?? 0}");
+                foreach (var bp in bucket.BucketProducts ?? new List<BucketProduct>())
+                {
+                    Console.WriteLine($"BucketProduct: BucketId={bp.BucketId}, ProductId={bp.ProductId}, Quantity={bp.Quantity}");
+                }
+            }
+
+            return bucket;
+        }
         public async Task UpdateBucketAsync(Bucket bucket, CancellationToken token)
         {
              _context.Buckets.Update(bucket);

@@ -20,7 +20,7 @@ namespace MvcLearning.Data.Entities
         public Shop Shop { get; set; }
         public Guid CategoryId { get; set; }
         public List<Category>? Categories { get; set; }
-
+        public List<Bucket>? Buckets { get; set; }
 
 
     }

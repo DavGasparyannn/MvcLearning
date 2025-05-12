@@ -11,9 +11,11 @@ namespace MvcLearning.Business.Services
     public class BucketService
     {
         private readonly IBucketRepository _bucketRepository;
-        public BucketService(IBucketRepository bucketRepository)
+        private readonly IProductRepository _productRepository;
+        public BucketService(IBucketRepository bucketRepository,IProductRepository productRepository)
         {
             _bucketRepository = bucketRepository;
+            _productRepository = productRepository;
         }
         public async Task AddBucketToUser(string userId, CancellationToken token = default)
         {
@@ -23,14 +25,11 @@ namespace MvcLearning.Business.Services
         {
             return await _bucketRepository.GetBucketByUserId(userId, token);
         }
-        public async Task AddProductToBucket(string userId, Product product, CancellationToken token = default)
+        public async Task AddProductToBucket(string userId, Guid productId, int quantity, CancellationToken token = default)
         {
             var bucket = await GetBucketAsync(userId, token);
-            if (bucket != null)
-            {
-                bucket.Products.Add(product);
-                await _bucketRepository.UpdateBucketAsync(bucket, token);
-            }
+
+            await _productRepository.AddProductToBucket(bucket.Id, productId, quantity, token);
         }
     }
 }

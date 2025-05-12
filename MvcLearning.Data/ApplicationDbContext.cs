@@ -16,8 +16,7 @@ namespace MvcLearning.Data
         public DbSet<Order> Orders { get; set; }
         public DbSet<Bucket> Buckets { get; set; }
         public DbSet<Shop> Shops { get; set; }
-
-        // ... остальные using и код без изменений ...
+        public DbSet<BucketProduct> BucketProducts { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -36,26 +35,24 @@ namespace MvcLearning.Data
                 .WithOne(o => o.User)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            // Bucket — Products (Many-to-Many)
-            modelBuilder.Entity<Bucket>()
-    .HasMany(b => b.Products)
-    .WithMany()
-    .UsingEntity<BucketProduct>(
-        j => j
-            .HasOne(bp => bp.Product)
-            .WithMany()
-            .HasForeignKey(bp => bp.ProductId),
-        j => j
-            .HasOne(bp => bp.Bucket)
-            .WithMany()
-            .HasForeignKey(bp => bp.BucketId),
-        j =>
-        {
-            j.Property(bp => bp.Quantity);
-            j.Property(bp => bp.CreatedAt);
-            j.HasKey(bp => bp.Id);
-            j.HasAlternateKey(bp => new { bp.BucketId, bp.ProductId });
-        });
+            // BucketProduct (Many-to-Many между Bucket и Product)
+            modelBuilder.Entity<BucketProduct>()
+                .HasKey(bp => bp.Id);
+
+            modelBuilder.Entity<BucketProduct>()
+                .HasAlternateKey(bp => new { bp.BucketId, bp.ProductId });
+
+            modelBuilder.Entity<BucketProduct>()
+                .HasOne(bp => bp.Bucket)
+                .WithMany(b => b.BucketProducts)
+                .HasForeignKey(bp => bp.BucketId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<BucketProduct>()
+                .HasOne(bp => bp.Product)
+                .WithMany()
+                .HasForeignKey(bp => bp.ProductId)
+                .OnDelete(DeleteBehavior.Cascade);
 
             // Product — Category (Many-to-Many)
             modelBuilder.Entity<Product>()
@@ -97,9 +94,9 @@ namespace MvcLearning.Data
                     Id = Guid.NewGuid().ToString(),
                     Name = "ShopOwner",
                     NormalizedName = "SHOPOWNER"
-                }
-            );
-            // Guid ID по умолчанию
+                });
+
+            // Автогенерация ID
             modelBuilder.Entity<User>().Property(u => u.Id).ValueGeneratedOnAdd();
             modelBuilder.Entity<Bucket>().Property(b => b.Id).ValueGeneratedOnAdd();
             modelBuilder.Entity<Product>().Property(p => p.Id).ValueGeneratedOnAdd();

@@ -1,28 +1,49 @@
 ﻿@using MvcLearning.Data.Entities
-@model Bucket;
+@model Bucket
+
 @{
-	ViewData["Title"] = "Bucket";
+    ViewData["Title"] = "Bucket";
 }
-		<h3>Bucket</h3>
-@if (Model.Products.Count == 0)
+
+<h3>Bucket</h3>
+
+@if (Model.BucketProducts == null || !Model.BucketProducts.Any())
 {
-	<p>Bucket is empty</p>
+    <p>Bucket is empty</p>
 }
 else
 {
-	<div>
-		@foreach (var product in Model.Products!)
-		{
-			<div>
-				<h3>@product.Name</h3>
-				<p>@product.Description</p>	
-				<p>Price: @product.Price.ToString("C")</p>
-				<p>Shop: @product.Shop?.Name</p>
-				<a asp-action="Details" asp-controller="Product" asp-route-productId="@product.Id">View Details</a>
-			</div>
-		}
-		@* <p>Total Price: @Model.TotalPrice.ToString("C")</p>
-		<p>Total Count: @Model.TotalCount</p> *@
-	</div>
+    <div>
+        @foreach (var bucketProduct in Model.BucketProducts)
+        {
+            var product = bucketProduct.Product;
+            if (product == null)
+            {
+                continue;
+            }
+
+            var quantity = bucketProduct.Quantity;
+            var totalPriceForProduct = product.Price * quantity;
+
+            <div>
+                <h3>@product.Name</h3>
+                <p>@product.Description</p>
+                <p>Price: @product.Price.ToString("C")</p>
+                <p>Quantity: @quantity</p>
+                <p>Subtotal: @totalPriceForProduct.ToString("C")</p>
+                <p>Shop: @product.Shop?.Name</p>
+                <a asp-action="Details" asp-controller="Product" asp-route-productId="@product.Id">View Details</a>
+            </div>
+        }
+
+        @{
+            var totalPrice = Model.BucketProducts.Sum(bp => (bp.Product?.Price ?? 0) * bp.Quantity);
+            var totalCount = Model.BucketProducts.Sum(bp => bp.Quantity);
+        }
+
+        <p>Total Price: @totalPrice.ToString("C")</p>
+        <p>Total Count: @totalCount</p>
+    </div>
 }
-		<a asp-action="Index" asp-controller="Home" class="btn btn-primary">Back</a>
+
+<a asp-action="Index" asp-controller="Home" class="btn btn-primary">Back</a>

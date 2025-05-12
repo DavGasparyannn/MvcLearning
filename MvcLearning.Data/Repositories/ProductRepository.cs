@@ -48,5 +48,28 @@ namespace MvcLearning.Data.Repositories
                 .Include(p => p.Shop.Owner)
                 .FirstOrDefaultAsync(p => p.Id == id,token);
         }
+        public async Task AddProductToBucket(Guid bucketId, Guid productId, int quantity = 1 ,CancellationToken token = default) {
+            var existing = await _context.BucketProducts
+         .FirstOrDefaultAsync(bp => bp.BucketId == bucketId && bp.ProductId == productId, token);
+
+            if (existing != null)
+            {
+                existing.Quantity += quantity;
+            }
+            else
+            {
+                var bucketProduct = new BucketProduct
+                {
+                    Id = Guid.NewGuid(),
+                    BucketId = bucketId,
+                    ProductId = productId,
+                    Quantity = quantity,
+                    CreatedAt = DateTime.UtcNow
+                };
+                _context.BucketProducts.Add(bucketProduct);
+            }
+
+            await _context.SaveChangesAsync(token);
+        }
     }
 }

@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using MvcLearning.Data;
 
@@ -11,9 +12,11 @@ using MvcLearning.Data;
 namespace MvcLearning.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250512120439_fixing_bucket")]
+    partial class fixing_bucket
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -66,7 +69,7 @@ namespace MvcLearning.Data.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "16db77ed-a8bd-4299-902f-be06c51137f1",
+                            Id = "d0137150-c8db-4a0c-8a11-8c53cb042ee4",
                             Name = "ShopOwner",
                             NormalizedName = "SHOPOWNER"
                         });
@@ -184,16 +187,11 @@ namespace MvcLearning.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid?>("ProductId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<string>("UserId")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("ProductId");
 
                     b.HasIndex("UserId")
                         .IsUnique();
@@ -210,6 +208,9 @@ namespace MvcLearning.Data.Migrations
                     b.Property<Guid>("BucketId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<Guid?>("BucketId1")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
@@ -223,9 +224,11 @@ namespace MvcLearning.Data.Migrations
 
                     b.HasAlternateKey("BucketId", "ProductId");
 
+                    b.HasIndex("BucketId1");
+
                     b.HasIndex("ProductId");
 
-                    b.ToTable("BucketProducts");
+                    b.ToTable("BucketProduct", (string)null);
                 });
 
             modelBuilder.Entity("MvcLearning.Data.Entities.Category", b =>
@@ -527,10 +530,6 @@ namespace MvcLearning.Data.Migrations
 
             modelBuilder.Entity("MvcLearning.Data.Entities.Bucket", b =>
                 {
-                    b.HasOne("MvcLearning.Data.Entities.Product", null)
-                        .WithMany("Buckets")
-                        .HasForeignKey("ProductId");
-
                     b.HasOne("MvcLearning.Data.Entities.User", "User")
                         .WithOne("Bucket")
                         .HasForeignKey("MvcLearning.Data.Entities.Bucket", "UserId")
@@ -543,10 +542,14 @@ namespace MvcLearning.Data.Migrations
             modelBuilder.Entity("MvcLearning.Data.Entities.BucketProduct", b =>
                 {
                     b.HasOne("MvcLearning.Data.Entities.Bucket", "Bucket")
-                        .WithMany("BucketProducts")
+                        .WithMany()
                         .HasForeignKey("BucketId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.HasOne("MvcLearning.Data.Entities.Bucket", null)
+                        .WithMany("BucketProducts")
+                        .HasForeignKey("BucketId1");
 
                     b.HasOne("MvcLearning.Data.Entities.Product", "Product")
                         .WithMany()
@@ -624,11 +627,6 @@ namespace MvcLearning.Data.Migrations
             modelBuilder.Entity("MvcLearning.Data.Entities.Bucket", b =>
                 {
                     b.Navigation("BucketProducts");
-                });
-
-            modelBuilder.Entity("MvcLearning.Data.Entities.Product", b =>
-                {
-                    b.Navigation("Buckets");
                 });
 
             modelBuilder.Entity("MvcLearning.Data.Entities.Shop", b =>

@@ -24,18 +24,12 @@ namespace MvcLearning.Controllers
             var bucket = await _bucketService.GetBucketAsync(user!.Id);
             return View(bucket);
         }
-        public async Task<IActionResult> AddToBucket(Guid productId)
+        public async Task<IActionResult> AddToBucket(Guid productId, int quantity = 1)
         {
-            var user = _userManager.FindByNameAsync(User.Identity!.Name!).Result;
-            var bucket = await _bucketService.GetBucketAsync(user!.Id);
-            if (bucket != null)
-            {
-                var product = await _productService.GetProduct(productId);
-                if (product != null)
-                {
-                    await _bucketService.AddProductToBucket(user.Id, product);
-                }
-            }
+            var user = await _userManager.FindByNameAsync(User.Identity!.Name!);
+            if (user == null) return Unauthorized();
+
+            await _bucketService.AddProductToBucket(user.Id, productId, quantity);
             return RedirectToAction("Index");
         }
     }
