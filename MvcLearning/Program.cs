@@ -12,7 +12,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlSer
 
 builder.Services.AddIdentity<User, IdentityRole>(options =>
 {
-    options.SignIn.RequireConfirmedAccount = true; // Сохраняем требование подтверждения аккаунта
+    options.SignIn.RequireConfirmedAccount = false; // Сохраняем требование подтверждения аккаунта
 })
     .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddDefaultTokenProviders();
@@ -21,8 +21,10 @@ builder.Services.AddControllersWithViews();
 
 builder.Services.AddScoped<IShopRepository, ShopRepository>();
 builder.Services.AddScoped<IProductRepository, ProductRepository>();
+builder.Services.AddScoped<IBucketRepository, BucketRepository>();
 builder.Services.AddScoped<ProductService>();
 builder.Services.AddScoped<ShopService>();
+builder.Services.AddScoped<BucketService>();
 builder.Services.AddRazorPages();
 
 

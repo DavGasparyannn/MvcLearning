@@ -38,8 +38,24 @@ namespace MvcLearning.Data
 
             // Bucket — Products (Many-to-Many)
             modelBuilder.Entity<Bucket>()
-                .HasMany(b => b.Products)
-                .WithMany();
+    .HasMany(b => b.Products)
+    .WithMany()
+    .UsingEntity<BucketProduct>(
+        j => j
+            .HasOne(bp => bp.Product)
+            .WithMany()
+            .HasForeignKey(bp => bp.ProductId),
+        j => j
+            .HasOne(bp => bp.Bucket)
+            .WithMany()
+            .HasForeignKey(bp => bp.BucketId),
+        j =>
+        {
+            j.Property(bp => bp.Quantity);
+            j.Property(bp => bp.CreatedAt);
+            j.HasKey(bp => bp.Id);
+            j.HasAlternateKey(bp => new { bp.BucketId, bp.ProductId });
+        });
 
             // Product — Category (Many-to-Many)
             modelBuilder.Entity<Product>()
