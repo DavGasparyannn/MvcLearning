@@ -8,7 +8,7 @@ using MvcLearning.Data.Entities;
 
 namespace MvcLearning.Controllers
 {
-    [Authorize]
+    [Authorize(Roles = "ShopOwner")]
     public class ShopController : Controller
     {
         private readonly ShopService _shopService;
@@ -26,9 +26,12 @@ namespace MvcLearning.Controllers
             var shop = _shopService.GetShopAsync(user!.Id).Result;
             return View(shop);
         }
-        public async Task<IActionResult> Orders(Guid shopId,CancellationToken token)
+        public async Task<IActionResult> Orders(CancellationToken token)
         {
-            var orders = await _orderService.GetOrdersByShopIdAsync(shopId, token);
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var shop = await _shopService.GetShopAsync(userId!); // сам напиши этот метод, если его нет
+            if (shop == null) return NotFound();
+            var orders = await _orderService.GetOrdersByShopIdAsync(shop.Id, token);
             return View(orders);
         }
         public IActionResult Create()

@@ -64,6 +64,7 @@ namespace MvcLearning.Data.Repositories
             return await _context.Orders
                 .Include(o => o.OrderItems)
                 .ThenInclude(oi => oi.Product)
+                .Include(o => o.User)
                 .Where(o => o.Id == orderId)
                 .Select(o => new OrderDetailsDTO
                 {
@@ -76,7 +77,8 @@ namespace MvcLearning.Data.Repositories
                     {
                         ProductName = oi.Product.Name,
                         Quantity = oi.Quantity,
-                        PriceAtPurchaseTime = oi.PriceAtPurchaseTime
+                        PriceAtPurchaseTime = oi.PriceAtPurchaseTime,
+                        ShopId = oi.Product.ShopId
                     }).ToList()
                 })
                 .FirstOrDefaultAsync(token);
@@ -87,6 +89,7 @@ namespace MvcLearning.Data.Repositories
             return await _context.Orders
                 .Include(o => o.OrderItems)
                 .ThenInclude(oi => oi.Product)
+                .Include(o => o.User)
                 .Where(o => o.UserId == userId)
                 .Select(o => new OrderDetailsDTO
                 {

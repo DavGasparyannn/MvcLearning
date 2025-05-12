@@ -73,9 +73,17 @@ namespace MvcLearning.Data.Repositories
             var orders = await _context.Orders
         .Include(o => o.OrderItems)
             .ThenInclude(oi => oi.Product)
+            .Include(o =>o.User)
         .Where(o => o.OrderItems.Any(oi => oi.Product.ShopId == shopId))
         .ToListAsync(token);
-
+            foreach (var order in orders)
+            {
+                Console.WriteLine($"OrderId: {order.Id}");
+                foreach (var item in order.OrderItems)
+                {
+                    Console.WriteLine($"  Product: {item.Product?.Name}, ShopId: {item.Product?.ShopId}");
+                }
+            }
             return orders;
         }
     }
