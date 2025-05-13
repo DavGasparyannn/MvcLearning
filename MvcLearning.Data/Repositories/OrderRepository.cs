@@ -22,7 +22,7 @@ namespace MvcLearning.Data.Repositories
             if (bucket == null || bucket.BucketProducts == null || !bucket.BucketProducts.Any())
                 throw new Exception("Bucket is empty or not found");
 
-            var user = await _context.Users.FirstOrDefaultAsync(u=>u.Id == bucket.UserId , token);
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == bucket.UserId, token);
             if (user == null)
                 throw new Exception("User not found");
 
@@ -30,29 +30,43 @@ namespace MvcLearning.Data.Repositories
             {
                 User = user,
                 Status = OrderStatus.Pending,
-                
+
                 OrderingTime = DateTime.UtcNow,
                 TotalAmount = bucket.BucketProducts.Sum(bp => bp.Quantity * bp.Product.Price),
                 OrderItems = new List<OrderItem>()
 
             };
+            var shopsHandled = new HashSet<Guid>();
+
             foreach (var bp in bucket.BucketProducts)
-{
-    var product = await _context.Products
-        .FirstOrDefaultAsync(p => p.Id == bp.Product.Id, token);
+            {
+                var product = await _context.Products
+    .Include(p => p.Shop)
+        .ThenInclude(s => s.Customers)
+    .FirstOrDefaultAsync(p => p.Id == bp.Product.Id, token);
 
-    if (product == null)
-        throw new Exception($"Product with ID {bp.Product.Id} not found");
+                if (product == null)
+                    throw new Exception($"Product with ID {bp.Product.Id} not found");
 
-    order.OrderItems.Add(new OrderItem
-    {
-        Id = Guid.NewGuid(),
-        Order = order,
-        ProductId = product.Id,
-        Quantity = bp.Quantity,
-        PriceAtPurchaseTime = product.Price
-    });
-}
+                order.OrderItems.Add(new OrderItem
+                {
+                    Id = Guid.NewGuid(),
+                    Order = order,
+                    ProductId = product.Id,
+                    Quantity = bp.Quantity,
+                    PriceAtPurchaseTime = product.Price
+                });
+                if (!shopsHandled.Contains(product.ShopId))
+                {
+
+                    if (!bp.Product.Shop.Customers.Any(u => order.UserId == u.Id))
+                    {
+                        await AddCustomerToShop(bp.Product.ShopId, order.UserId, token); // Add customer to shop
+                    }
+                    shopsHandled.Add(product.ShopId);
+                }
+            }
+
             await _context.Orders.AddAsync(order);
             await _context.SaveChangesAsync(token);
             return order;
@@ -106,6 +120,22 @@ namespace MvcLearning.Data.Repositories
                     }).ToList()
                 })
                 .ToListAsync(token);
+        }
+        private async Task AddCustomerToShop(Guid shopId, string userId, CancellationToken token)
+        {
+            var shop = await _context.Shops
+                .Include(s => s.Customers)
+                .FirstOrDefaultAsync(s => s.Id == shopId, token);
+            if (shop == null)
+                throw new Exception("Shop not found");
+            var user = await _context.Users
+                .FirstOrDefaultAsync(u => u.Id == userId, token);
+            if (user == null)
+                throw new Exception("User not found");
+
+                shop.Customers.Add(user);
+
+            await _context.SaveChangesAsync(token);
         }
     }
 }
