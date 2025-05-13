@@ -1,0 +1,37 @@
+﻿@using MvcLearning.Data.Entities
+@model List<User> 
+
+@{
+    ViewData["Title"] = "Customers";
+}
+
+<h2>Customers of the Shop</h2>
+
+@if (Model == null || !Model.Any())
+{
+    <p>No customers found for this shop.</p>
+}
+else
+{
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>User ID</th>
+                <th>Email</th>
+                <th>User Name</th>
+                <!-- Добавь другие поля, если нужно -->
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var user in Model)
+            {
+                <tr>
+                    <td><a asp-action="Customer" asp-route-userId="@user.Id">@user.Id</a></td>
+                    <td>@user.Email</td>
+                    <td>@user.UserName</td>
+                    <!-- Добавь другие поля, если есть -->
+                </tr>
+            }
+        </tbody>
+    </table>
+}

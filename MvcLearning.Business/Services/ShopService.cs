@@ -50,20 +50,25 @@ namespace MvcLearning.Business.Services
 
             await _shopRepository.DeleteShopAsync(shopId, token);
         }
-        public async Task<Shop> GetShopAsync(Guid shopId)
+        public async Task<Shop> GetShopAsync(Guid shopId,CancellationToken token = default)
         {
-            var shop = await _shopRepository.GetShopByIdAsync(shopId, CancellationToken.None);
+            var shop = await _shopRepository.GetShopByIdAsync(shopId, token);
             return shop;
         }
-        public async Task<Shop> GetShopAsync(string userId)
+        public async Task<Shop> GetShopAsync(string userId,CancellationToken token = default)
         {
-            var shop = await _shopRepository.GetShopByUserIdAsync(userId, CancellationToken.None);
+            var shop = await _shopRepository.GetShopByUserIdAsync(userId, token);
             return shop;
         }
 
         public async Task<bool> UpdateOrderStatus(Guid orderId, OrderStatus newStatus,string shopOwnerId ,CancellationToken token)
         {
            return await _shopRepository.UpdateOrderStatus(orderId, newStatus,shopOwnerId, token);
+        }
+        public async Task<List<User>> GetCustomers(Guid shopId, CancellationToken token = default)
+        {
+            var customers = await _shopRepository.GetAllCustomersByShopId(shopId, token);
+            return customers;
         }
     }
 }

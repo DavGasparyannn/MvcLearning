@@ -11,7 +11,7 @@ using MvcLearning.Data.Interfaces;
 
 namespace MvcLearning.Data.Repositories
 {
-    public class ShopRepository : IShopRepository 
+    public class ShopRepository : IShopRepository
     {
         private readonly ApplicationDbContext _context;
         public ShopRepository(ApplicationDbContext context)
@@ -27,7 +27,7 @@ namespace MvcLearning.Data.Repositories
             return await _context.Shops
                 .Include(s => s.Products)
                 .Include(s => s.Owner)
-                .FirstOrDefaultAsync(s=>s.Id == id) ?? null;
+                .FirstOrDefaultAsync(s => s.Id == id) ?? null;
         }
         public async Task<Shop> GetShopByUserIdAsync(string userId, CancellationToken token)
         {
@@ -75,7 +75,7 @@ namespace MvcLearning.Data.Repositories
             var orders = await _context.Orders
         .Include(o => o.OrderItems)
             .ThenInclude(oi => oi.Product)
-            .Include(o =>o.User)
+            .Include(o => o.User)
         .Where(o => o.OrderItems.Any(oi => oi.Product.ShopId == shopId))
         .ToListAsync(token);
             foreach (var order in orders)
@@ -89,7 +89,7 @@ namespace MvcLearning.Data.Repositories
             return orders;
         }
 
-        public async Task<bool> UpdateOrderStatus(Guid orderId, OrderStatus newStatus, string shopOwnerId,CancellationToken token)
+        public async Task<bool> UpdateOrderStatus(Guid orderId, OrderStatus newStatus, string shopOwnerId, CancellationToken token)
         {
             var order = await _context.Orders
     .Include(o => o.OrderItems)
@@ -103,6 +103,14 @@ namespace MvcLearning.Data.Repositories
             order.Status = newStatus;
             await _context.SaveChangesAsync(token);
             return true;
+        }
+        public async Task<List<User>> GetAllCustomersByShopId(Guid shopId, CancellationToken token)
+        {
+            var customers = await _context.Shops
+        .Where(s => s.Id == shopId)
+        .SelectMany(s => s.Customers)
+        .ToListAsync(token);
+            return customers;
         }
     }
 }

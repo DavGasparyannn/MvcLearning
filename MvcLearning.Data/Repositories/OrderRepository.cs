@@ -61,7 +61,7 @@ namespace MvcLearning.Data.Repositories
 
                     if (!bp.Product.Shop.Customers.Any(u => order.UserId == u.Id))
                     {
-                        await AddCustomerToShop(bp.Product.ShopId, order.UserId, token); // Add customer to shop
+                        await AddCustomerToShop(bp.Product.ShopId, order.User.Id, token); // Add customer to shop
                     }
                     shopsHandled.Add(product.ShopId);
                 }
@@ -133,9 +133,11 @@ namespace MvcLearning.Data.Repositories
             if (user == null)
                 throw new Exception("User not found");
 
+            if (!shop.Customers.Any(u => u.Id == userId))
+            {
                 shop.Customers.Add(user);
-
-            await _context.SaveChangesAsync(token);
+                await _context.SaveChangesAsync(token); // Сохраняем изменения
+            }
         }
     }
 }

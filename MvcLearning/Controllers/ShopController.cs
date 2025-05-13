@@ -16,7 +16,7 @@ namespace MvcLearning.Controllers
         private readonly ShopService _shopService;
         private readonly OrderService _orderService;
         private readonly UserManager<User> _userManager;
-        public ShopController(ShopService shopService,OrderService orderService,UserManager<User> userManager)
+        public ShopController(ShopService shopService, OrderService orderService, UserManager<User> userManager)
         {
             _shopService = shopService;
             _orderService = orderService;
@@ -74,7 +74,7 @@ namespace MvcLearning.Controllers
             {
                 await _shopService.DeleteShopAsync(id, userId);
                 return RedirectToAction("Index");
-            }   
+            }
             catch (InvalidOperationException ex)
             {
                 TempData["Error"] = ex.Message;
@@ -92,6 +92,21 @@ namespace MvcLearning.Controllers
                 return BadRequest();
 
             return Ok();
+        }
+        public async Task<IActionResult> Customers(CancellationToken token = default)
+        {
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var shop = await _shopService.GetShopAsync(userId!);
+            if (shop == null) return NotFound();
+            var customers = await _shopService.GetCustomers(shop.Id, token);
+            return View(customers);
+        }
+        public async Task<IActionResult> Customer(string userId, CancellationToken token = default)
+        {
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null) return NotFound();
+            var orders = await _orderService.GetOrdersByUserIdAsync(userId, token);
+            return View(orders);
         }
     }
 }

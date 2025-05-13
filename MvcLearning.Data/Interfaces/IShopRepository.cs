@@ -20,5 +20,6 @@ namespace MvcLearning.Data.Interfaces
         Task AddProductToShopAsync(Guid shopId, Product product, CancellationToken token);
         Task<List<Order>> GetOrdersByShopId(Guid shopId, CancellationToken token);
         Task<bool> UpdateOrderStatus(Guid orderId, OrderStatus newStatus, string shopOwnerId, CancellationToken token);
+        Task<List<User>> GetAllCustomersByShopId(Guid shopId, CancellationToken token); 
     }
 }

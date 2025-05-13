@@ -16,6 +16,12 @@ builder.Services.AddIdentity<User, IdentityRole>(options =>
 })
     .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddDefaultTokenProviders();
+builder.Services.ConfigureApplicationCookie(options =>
+{
+    options.LoginPath = "/Identity/Account/Login"; // Укажи новый путь
+    options.AccessDeniedPath = "/Identity/Account/AccessDenied"; // Опционально: путь для доступа запрещен
+    options.LogoutPath = "/Identity/Account/Logout"; // Опционально: путь для выхода
+});
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
