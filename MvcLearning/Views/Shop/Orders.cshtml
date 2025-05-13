@@ -1,15 +1,16 @@
-﻿@model List<MvcLearning.Data.Entities.Order>
+﻿@using MvcLearning.Data.Enums
+@model List<MvcLearning.Data.Entities.Order>
 
-<h2>Мои заказы</h2>
+<h2>Orders</h2>
 
 <table>
     <thead>
         <tr>
-            <th>Номер заказа</th>
-            <th>Пользователь</th>
-            <th>Дата заказа</th>
-            <th>Статус</th>
-            <th>Действия</th>
+            <th>Order ID</th>
+            <th>Customer</th>
+            <th>Date</th>
+            <th>Status</th>
+            <th>Action</th>
         </tr>
     </thead>
     <tbody>
@@ -21,10 +22,43 @@
                 <td>@order.OrderingTime</td>
                 <td>@order.Status</td>
                 <td>
-                    <a href="@Url.Action("Details", "Order", new { orderId = order.Id })">Подробнее</a>
-                    <a href="@Url.Action("ChangeStatus", "ShopOrder", new { orderId = order.Id })">Изменить статус</a>
+                    <a href="@Url.Action("Details", "Order", new { orderId = order.Id })">Details</a>
+                   <select class="status-select form-control" data-order-id="@order.Id">
+                        @foreach (OrderStatus status in Enum.GetValues(typeof(OrderStatus)))
+                        {
+                            <option value="@status" selected="@(order.Status == status)">
+                                @status
+                            </option>
+                        }
+            </select>
                 </td>
+
             </tr>
         }
     </tbody>
 </table>
+@section Scripts {
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        document.querySelectorAll('.status-select').forEach(select => {
+            select.addEventListener('change', async (e) => {
+                const orderId = e.target.dataset.orderId;
+                const newStatus = e.target.value;
+
+                const response = await fetch(`/Shop/UpdateOrderStatus?orderId=${orderId}&newStatus=${newStatus}`, {
+                    method: 'POST'
+                });
+
+                if (response.ok) {
+                    const statusCell = document.querySelector(`#status-cell-${orderId}`);
+                    statusCell.textContent = newStatus;
+                    // эффект подсветки
+                    statusCell.style.backgroundColor = "#d4edda";
+                    setTimeout(() => statusCell.style.backgroundColor = "", 1000);
+                } else {
+                    alert("Order status changing failed");
+                }
+            });
+        });
+    </script>
+}

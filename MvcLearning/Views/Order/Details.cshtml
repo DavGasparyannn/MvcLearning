@@ -55,8 +55,6 @@ else
     <a asp-action="Orders" asp-controller="Shop" class="btn btn-primary">Back to Orders</a>
 }
 else
-{
-    var userRoles = User.Claims.Where(c => c.Type == ClaimTypes.Role).Select(c => c.Value).ToList();
-    var a = 15;
+{   
     <a asp-action="Index" asp-controller="Home" class="btn btn-primary">Back to Home</a>
 }

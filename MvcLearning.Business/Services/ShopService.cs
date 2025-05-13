@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using MvcLearning.Business.Models.Shop;
 using MvcLearning.Data.Entities;
+using MvcLearning.Data.Enums;
 using MvcLearning.Data.Interfaces;
 
 namespace MvcLearning.Business.Services
@@ -60,5 +61,9 @@ namespace MvcLearning.Business.Services
             return shop;
         }
 
+        public async Task<bool> UpdateOrderStatus(Guid orderId, OrderStatus newStatus,string shopOwnerId ,CancellationToken token)
+        {
+           return await _shopRepository.UpdateOrderStatus(orderId, newStatus,shopOwnerId, token);
+        }
     }
 }

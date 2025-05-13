@@ -26,7 +26,7 @@ namespace MvcLearning.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(ProductAddingModel model, Guid shopId, CancellationToken token = default)
+        public async Task<IActionResult> Create(ProductModel model, Guid shopId, CancellationToken token = default)
         {
                 var shop = await _shopService.GetShopAsync(shopId);
             if (!ModelState.IsValid)
@@ -86,6 +86,38 @@ namespace MvcLearning.Controllers
                 TempData["Error"] = ex.Message;
                 return RedirectToAction("Index","Shop");
             }
+        }
+        public async Task<IActionResult> Edit(Guid productId)
+        {
+            var product = await _productService.GetProduct(productId);
+            if (product == null)
+            {
+                return NotFound();
+            }
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var model = new ProductModel
+            {
+                Id = product.Id,
+                Name = product.Name,
+                Description = product.Description,
+                Price = product.Price,
+                ImageUrls = product.ImageUrls
+            };
+            return View(model);
+        }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(ProductModel updatedProduct)
+        {
+            if (!ModelState.IsValid)
+                return View(updatedProduct);
+
+            var result = await _productService.UpdateProductAsync(updatedProduct);
+
+            if (!result)
+                return NotFound(); // или вернуть ошибку
+
+            return Redirect($"/Product/Details?productId={updatedProduct.Id}");
         }
     }
 }

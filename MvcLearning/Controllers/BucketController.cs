@@ -22,6 +22,11 @@ namespace MvcLearning.Controllers
         {
             var user = _userManager.FindByNameAsync(User.Identity!.Name!).Result;
             var bucket = await _bucketService.GetBucketAsync(user!.Id);
+            if (bucket == null)
+            {
+                await _bucketService.AddBucketToUser(user.Id);
+                bucket = await _bucketService.GetBucketAsync(user.Id);
+            }
             return View(bucket);
         }
         public async Task<IActionResult> AddToBucket(Guid productId, int quantity = 1)

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using MvcLearning.Data.Entities;
+using MvcLearning.Data.Enums;
 
 namespace MvcLearning.Data.Interfaces
 {
@@ -18,5 +19,6 @@ namespace MvcLearning.Data.Interfaces
         Task<bool> ShopExistsAsync(string id, CancellationToken token);
         Task AddProductToShopAsync(Guid shopId, Product product, CancellationToken token);
         Task<List<Order>> GetOrdersByShopId(Guid shopId, CancellationToken token);
+        Task<bool> UpdateOrderStatus(Guid orderId, OrderStatus newStatus, string shopOwnerId, CancellationToken token);
     }
 }

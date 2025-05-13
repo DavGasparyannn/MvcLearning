@@ -14,5 +14,6 @@ namespace MvcLearning.Data.Interfaces
         Task DeleteProduct(Guid id, CancellationToken token);
         Task<List<Product>> GetAllProducts(CancellationToken token);
         Task AddProductToBucket(Guid bucketId, Guid productId,int quantity, CancellationToken token);
+        Task<bool> UpdateProductAsync(Product product, CancellationToken token);
     }
 }

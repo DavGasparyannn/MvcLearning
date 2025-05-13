@@ -18,7 +18,7 @@ namespace MvcLearning.Business.Services
             _productRepository = productRepository;
             _shopRepository = shopRepository;
         }
-        public async Task AddProductAsync(ProductAddingModel productAddingModel,Guid shopId, CancellationToken token = default)
+        public async Task AddProductAsync(ProductModel productAddingModel,Guid shopId, CancellationToken token = default)
         {
             var product = new Product
             {
@@ -46,6 +46,21 @@ namespace MvcLearning.Business.Services
         {
             var products = await _productRepository.GetAllProducts(token);
             return products.Take(10).ToList();
+        }
+
+        public async Task<bool> UpdateProductAsync(ProductModel model,CancellationToken token = default)
+        {
+            var existing = await _productRepository.GetProductAsync(model.Id,token);
+            if (existing == null)
+                return false;
+
+            // Маппим данные из модели в сущность
+            existing.Name = model.Name;
+            existing.Description = model.Description;
+            existing.Price = model.Price;
+            // и т.д.
+
+            return await _productRepository.UpdateProductAsync(existing,token);
         }
     }
 }

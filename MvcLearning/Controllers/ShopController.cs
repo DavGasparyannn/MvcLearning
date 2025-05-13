@@ -2,9 +2,11 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using MvcLearning.Business.Models.Shop;
 using MvcLearning.Business.Services;
 using MvcLearning.Data.Entities;
+using MvcLearning.Data.Enums;
 
 namespace MvcLearning.Controllers
 {
@@ -24,6 +26,15 @@ namespace MvcLearning.Controllers
         {
             var user = _userManager.GetUserAsync(User).Result;
             var shop = _shopService.GetShopAsync(user!.Id).Result;
+            return View(shop);
+        }
+        [AllowAnonymous]
+        public async Task<IActionResult> Info(Guid shopId)
+        {
+            var shop = await _shopService.GetShopAsync(shopId);
+            if (shop == null)
+                return NotFound();
+
             return View(shop);
         }
         public async Task<IActionResult> Orders(CancellationToken token)
@@ -69,6 +80,18 @@ namespace MvcLearning.Controllers
                 TempData["Error"] = ex.Message;
                 return RedirectToAction("Index");
             }
+        }
+        [HttpPost]
+        public async Task<IActionResult> UpdateOrderStatus(Guid orderId, OrderStatus newStatus, CancellationToken token)
+        {
+            var shopOwnerId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            var success = await _shopService.UpdateOrderStatus(orderId, newStatus, shopOwnerId!, token);
+
+            if (!success)
+                return BadRequest();
+
+            return Ok();
         }
     }
 }

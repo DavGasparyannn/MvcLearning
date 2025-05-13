@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using MvcLearning.Data.Entities;
+using MvcLearning.Data.Enums;
 using MvcLearning.Data.Interfaces;
 
 namespace MvcLearning.Data.Repositories
@@ -85,6 +87,22 @@ namespace MvcLearning.Data.Repositories
                 }
             }
             return orders;
+        }
+
+        public async Task<bool> UpdateOrderStatus(Guid orderId, OrderStatus newStatus, string shopOwnerId,CancellationToken token)
+        {
+            var order = await _context.Orders
+    .Include(o => o.OrderItems)
+        .ThenInclude(oi => oi.Product)
+            .ThenInclude(p => p.Shop)
+    .FirstOrDefaultAsync(o => o.Id == orderId, token);
+
+            if (order == null || !order.OrderItems.Any(oi => oi.Product.Shop.OwnerId == shopOwnerId))
+                return false;
+
+            order.Status = newStatus;
+            await _context.SaveChangesAsync(token);
+            return true;
         }
     }
 }

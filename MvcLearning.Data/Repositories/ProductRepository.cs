@@ -29,6 +29,10 @@ namespace MvcLearning.Data.Repositories
             {
                 throw new InvalidOperationException("Product not found");
             }
+            if (_context.OrderItems.Any(oi => oi.ProductId == id))
+            {
+                throw new InvalidOperationException("You cant remove this Product - there are orders to this product");
+            }
             _context.Products.Remove(product);
             await _context.SaveChangesAsync(token);
         }
@@ -70,6 +74,18 @@ namespace MvcLearning.Data.Repositories
             }
 
             await _context.SaveChangesAsync(token);
+        }
+
+        public async Task<bool> UpdateProductAsync(Product product , CancellationToken token)
+        {
+            var productForUpdate = await GetProductAsync(product.Id, token);
+            if (productForUpdate == null)
+            {
+                throw new InvalidOperationException("Product not found");
+            }
+            _context.Products.Update(product);
+            await _context.SaveChangesAsync(token);
+            return true;
         }
     }
 }

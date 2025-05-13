@@ -2,50 +2,55 @@
 @model Bucket
 
 @{
-    ViewData["Title"] = "Bucket";
+	ViewData["Title"] = "Bucket";
 }
 
 <h3>Bucket</h3>
-
-@if (Model.BucketProducts == null || !Model.BucketProducts.Any())
+@{
+	var isEmptyBucket = Model.BucketProducts == null || !Model.BucketProducts.Any();
+}
+@if (isEmptyBucket)
 {
-    <p>Bucket is empty</p>
+	<p>Bucket is empty</p>
 }
 else
 {
-    <div>
-        @foreach (var bucketProduct in Model.BucketProducts)
-        {
-            var product = bucketProduct.Product;
-            if (product == null)
-            {
-                continue;
-            }
+	<div>
+		@foreach (var bucketProduct in Model.BucketProducts)
+		{
+			var product = bucketProduct.Product;
+			if (product == null)
+			{
+				continue;
+			}
 
-            var quantity = bucketProduct.Quantity;
-            var totalPriceForProduct = product.Price * quantity;
+			var quantity = bucketProduct.Quantity;
+			var totalPriceForProduct = product.Price * quantity;
 
-            <div>
-                <h3>@product.Name</h3>
-                <p>@product.Description</p>
-                <p>Price: @product.Price.ToString("C")</p>
-                <p>Quantity: @quantity</p>
-                <p>Subtotal: @totalPriceForProduct.ToString("C")</p>
-                <p>Shop: @product.Shop?.Name</p>
-                <a asp-action="Details" asp-controller="Product" asp-route-productId="@product.Id">View Details</a>
-            </div>
-        }
+			<div>
+				<h3>@product.Name</h3>
+				<p>@product.Description</p>
+				<p>Price: @product.Price.ToString("C")</p>
+				<p>Quantity: @quantity</p>
+				<p>Subtotal: @totalPriceForProduct.ToString("C")</p>
+				<p>Shop: @product.Shop?.Name</p>
+				<a asp-action="Details" asp-controller="Product" asp-route-productId="@product.Id">View Details</a>
+			</div>
+		}
 
-        @{
-            var totalPrice = Model.BucketProducts.Sum(bp => (bp.Product?.Price ?? 0) * bp.Quantity);
-            var totalCount = Model.BucketProducts.Sum(bp => bp.Quantity);
-        }
+		@{
+			var totalPrice = Model.BucketProducts.Sum(bp => (bp.Product?.Price ?? 0) * bp.Quantity);
+			var totalCount = Model.BucketProducts.Sum(bp => bp.Quantity);
+		}
 
-        <p>Total Price: @totalPrice.ToString("C")</p>
-        <p>Total Count: @totalCount</p>
-    </div>
+		<p>Total Price: @totalPrice.ToString("C")</p>
+		<p>Total Count: @totalCount</p>
+	</div>
 }
-<form asp-action="Create" asp-controller="Order" method="post">
-    <button type="submit" class="btn btn-success">Place Order</button>
-</form>
+@if (!isEmptyBucket)
+{
+	<form asp-action="Create" asp-controller="Order" method="post">
+		<button type="submit" class="btn btn-success">Place Order</button>
+	</form>
+}
 <a asp-action="Index" asp-controller="Home" class="btn btn-primary">Back</a>
