@@ -6,6 +6,18 @@
 }
 
 <h3>Bucket</h3>
+@if (TempData["SuccessMessage"] != null)
+{
+	<div class="alert alert-success" role="alert">
+		@TempData["SuccessMessage"]
+	</div>
+}
+else if (TempData["ErrorMessage"] != null)
+{
+	<div class="alert alert-danger" role="alert">
+		@TempData["ErrorMessage"]
+	</div>
+}
 @{
 	var isEmptyBucket = Model.BucketProducts == null || !Model.BucketProducts.Any();
 }

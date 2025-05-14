@@ -13,9 +13,11 @@ namespace MvcLearning.Data.Repositories
     public class OrderRepository : IOrderRepository
     {
         private readonly ApplicationDbContext _context;
-        public OrderRepository(ApplicationDbContext context)
+		private readonly ITransactionRepository _transactionRepository;
+		public OrderRepository(ApplicationDbContext context, ITransactionRepository transactionRepository)
         {
             _context = context;
+            _transactionRepository = transactionRepository;
         }
         public async Task<Order> CreateOrderFromBucket(Bucket bucket, CancellationToken token)
         {
@@ -26,50 +28,75 @@ namespace MvcLearning.Data.Repositories
             if (user == null)
                 throw new Exception("User not found");
 
-            var order = new Order
+            var transaction = await _transactionRepository.BeginTransactionAsync(token);
+            try
             {
-                User = user,
-                Status = OrderStatus.Pending,
+				var order = new Order
+				{
+					User = user,
+					Status = OrderStatus.Pending,
 
-                OrderingTime = DateTime.Now,
-                TotalAmount = bucket.BucketProducts.Sum(bp => bp.Quantity * bp.Product.Price),
-                OrderItems = new List<OrderItem>()
+					OrderingTime = DateTime.Now,
+					TotalAmount = bucket.BucketProducts.Sum(bp => bp.Quantity * bp.Product.Price),
+					OrderItems = new List<OrderItem>()
 
-            };
-            var shopsHandled = new HashSet<Guid>();
+				};
+				if (order.TotalAmount > user.Balance)
+					throw new InvalidOperationException("Not enough money on the balance");
+				user.Balance -= order.TotalAmount;
 
-            foreach (var bp in bucket.BucketProducts)
+				var transactionEntity = new Transaction
+				{
+					Id = Guid.NewGuid(),
+					Type = TransactionType.Order,
+					UserId = user.Id,
+					Description = $"Order from bucket {bucket.Id}",
+					Amount = order.TotalAmount,
+					CreatedAt = DateTime.Now
+				};
+				var shopsHandled = new HashSet<Guid>();
+
+				foreach (var bp in bucket.BucketProducts)
+				{
+					var product = await _context.Products
+		.Include(p => p.Shop)
+			.ThenInclude(s => s.Customers)
+		.FirstOrDefaultAsync(p => p.Id == bp.Product.Id, token);
+
+					if (product == null)
+						throw new Exception($"Product with ID {bp.Product.Id} not found");
+
+					order.OrderItems.Add(new OrderItem
+					{
+						Id = Guid.NewGuid(),
+						Order = order,
+						ProductId = product.Id,
+						Quantity = bp.Quantity,
+						PriceAtPurchaseTime = product.Price
+					});
+					if (!shopsHandled.Contains(product.ShopId))
+					{
+
+						if (!bp.Product.Shop.Customers.Any(u => order.UserId == u.Id))
+						{
+							await AddCustomerToShop(bp.Product.ShopId, order.User.Id, token); // Add customer to shop
+						}
+						shopsHandled.Add(product.ShopId);
+					}
+				}
+                await _transactionRepository.AddTransactionAsync(transactionEntity, token);
+
+				await _context.Orders.AddAsync(order);
+				await _context.SaveChangesAsync(token);
+				await _transactionRepository.CommitTransactionAsync(transaction, token);
+				return order;
+			}
+            catch (Exception)
             {
-                var product = await _context.Products
-    .Include(p => p.Shop)
-        .ThenInclude(s => s.Customers)
-    .FirstOrDefaultAsync(p => p.Id == bp.Product.Id, token);
-
-                if (product == null)
-                    throw new Exception($"Product with ID {bp.Product.Id} not found");
-
-                order.OrderItems.Add(new OrderItem
-                {
-                    Id = Guid.NewGuid(),
-                    Order = order,
-                    ProductId = product.Id,
-                    Quantity = bp.Quantity,
-                    PriceAtPurchaseTime = product.Price
-                });
-                if (!shopsHandled.Contains(product.ShopId))
-                {
-
-                    if (!bp.Product.Shop.Customers.Any(u => order.UserId == u.Id))
-                    {
-                        await AddCustomerToShop(bp.Product.ShopId, order.User.Id, token); // Add customer to shop
-                    }
-                    shopsHandled.Add(product.ShopId);
-                }
+				await _transactionRepository.RollbackTransactionAsync(transaction, token);
+				throw;
             }
-
-            await _context.Orders.AddAsync(order);
-            await _context.SaveChangesAsync(token);
-            return order;
+			
 
         }
 

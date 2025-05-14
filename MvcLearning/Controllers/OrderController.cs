@@ -24,11 +24,12 @@ namespace MvcLearning.Controllers
             try
             {
                 var order = await _orderService.CreateOrderFromUserBucketAsync(userId, token);
+                TempData["SuccessMessage"] = "Order created successfully!";
                 return RedirectToAction("Details", new { orderId = order.Id });
             }
             catch (InvalidOperationException ex)
             {
-                TempData["Error"] = ex.Message;
+                TempData["ErrorMessage"] = ex.Message;
                 return RedirectToAction("Index", "Bucket");
             }
         }

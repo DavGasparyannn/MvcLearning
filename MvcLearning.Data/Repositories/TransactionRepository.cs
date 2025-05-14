@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore.Storage;
 using MvcLearning.Data.Entities;
 using MvcLearning.Data.Interfaces;
 
@@ -49,5 +50,36 @@ namespace MvcLearning.Data.Repositories
 
             }
         }
+            // Начать транзакцию
+    public async Task<IDbContextTransaction> BeginTransactionAsync(CancellationToken token = default)
+        {
+            return await _context.Database.BeginTransactionAsync(token);
+        }
+
+        // Коммитить транзакцию
+        public async Task CommitTransactionAsync(IDbContextTransaction transaction, CancellationToken token = default)
+        {
+            if (transaction != null)
+            {
+                await transaction.CommitAsync(token);
+            }
+        }
+
+        // Откатить транзакцию
+        public async Task RollbackTransactionAsync(IDbContextTransaction transaction, CancellationToken token = default)
+        {
+            if (transaction != null)
+            {
+                await transaction.RollbackAsync(token);
+            }
+        }
+
+        // Добавление транзакции в базу
+        public async Task AddTransactionAsync(Transaction transaction, CancellationToken token = default)
+        {
+            await _context.Transactions.AddAsync(transaction, token);
+        }
+
     }
 }
+
