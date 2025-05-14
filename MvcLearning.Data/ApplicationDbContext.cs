@@ -125,6 +125,13 @@ namespace MvcLearning.Data
                 entity.Property(t => t.Type)
                       .HasConversion<string>();
             });
+            modelBuilder.Entity<Transaction>()
+    .HasOne(t => t.Order)
+    .WithMany()
+    .HasForeignKey(t => t.OrderId)
+    .IsRequired(false)
+    .OnDelete(DeleteBehavior.Restrict);
+
             modelBuilder.Entity<User>()
         .HasMany(u => u.Transactions)
         .WithOne(t => t.User)
