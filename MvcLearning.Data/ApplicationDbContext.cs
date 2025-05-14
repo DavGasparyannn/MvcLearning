@@ -101,6 +101,32 @@ namespace MvcLearning.Data
                     j => j.HasOne<User>().WithMany().HasForeignKey("CustomersId").OnDelete(DeleteBehavior.Cascade),
                     j => j.HasOne<Shop>().WithMany().HasForeignKey("ShopId").OnDelete(DeleteBehavior.NoAction));
 
+            modelBuilder.Entity<Transaction>(entity =>
+            {
+                entity.HasKey(t => t.Id);
+
+                entity.Property(t => t.Amount)
+                      .HasColumnType("decimal(18,2)")
+                      .IsRequired();
+
+                entity.Property(t => t.Description)
+                      .HasMaxLength(500);
+
+                // Связь с пользователем
+                entity.HasOne(t => t.User)
+                      .WithMany(u => u.Transactions)
+                      .HasForeignKey(t => t.UserId)
+                      .OnDelete(DeleteBehavior.Restrict); // чтобы не удалялись вместе
+
+
+                // Enum конвертация, если надо как строку
+                entity.Property(t => t.Type)
+                      .HasConversion<string>();
+            });
+            modelBuilder.Entity<User>()
+        .HasMany(u => u.Transactions)
+        .WithOne(t => t.User)
+        .HasForeignKey(t => t.UserId);
             // Seed data for roles
             modelBuilder.Entity<IdentityRole>().HasData(
                 new IdentityRole

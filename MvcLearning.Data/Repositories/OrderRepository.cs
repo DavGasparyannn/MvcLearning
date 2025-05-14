@@ -31,7 +31,7 @@ namespace MvcLearning.Data.Repositories
                 User = user,
                 Status = OrderStatus.Pending,
 
-                OrderingTime = DateTime.UtcNow,
+                OrderingTime = DateTime.Now,
                 TotalAmount = bucket.BucketProducts.Sum(bp => bp.Quantity * bp.Product.Price),
                 OrderItems = new List<OrderItem>()
 

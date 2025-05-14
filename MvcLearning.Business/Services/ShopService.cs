@@ -35,7 +35,7 @@ namespace MvcLearning.Business.Services
                 Description = shopCreatingModel.Description,
                 ImageUrl = shopCreatingModel.ImageUrl,
                 OwnerId = ownerId,
-                CreatedAt = DateTime.UtcNow
+                CreatedAt = DateTime.Now
             };
             
             await _shopRepository.CreateShopAsync(shop, token);

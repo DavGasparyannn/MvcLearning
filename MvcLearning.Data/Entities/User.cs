@@ -12,12 +12,13 @@ namespace MvcLearning.Data.Entities
         public string FullName { get; set; } = string.Empty;
         public DateTime DateOfBirth { get; set; }
         public string ProfilePictureUrl { get; set; } = string.Empty;
-        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        public DateTime CreatedAt { get; set; } = DateTime.Now;
         public string? RegistrationIpAddress { get; set; }
         public string? LastLoginIpAddress { get; set; }
+        public decimal Balance { get; set; } = 0;
         public Bucket Bucket { get; set; }
         public Shop Shop { get; set; }
         public List<Order>? Orders { get; set; }
-
+        public List<Transaction> Transactions { get; set; }
     }
 }

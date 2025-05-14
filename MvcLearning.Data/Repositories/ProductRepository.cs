@@ -68,7 +68,7 @@ namespace MvcLearning.Data.Repositories
                     BucketId = bucketId,
                     ProductId = productId,
                     Quantity = quantity,
-                    CreatedAt = DateTime.UtcNow
+                    CreatedAt = DateTime.Now
                 };
                 _context.BucketProducts.Add(bucketProduct);
             }

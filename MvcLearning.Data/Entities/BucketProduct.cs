@@ -14,6 +14,6 @@ namespace MvcLearning.Data.Entities
         public Guid ProductId { get; set; }
         public Product? Product { get; set; }
         public int Quantity { get; set; } = 1;
-        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        public DateTime CreatedAt { get; set; } = DateTime.Now;
     }
 }

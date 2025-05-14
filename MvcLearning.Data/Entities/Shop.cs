@@ -13,7 +13,7 @@ namespace MvcLearning.Data.Entities
         public string Description { get; set; } = string.Empty;  // Описание магазина
         public string ImageUrl { get; set; } = "shop_default.png";
 
-        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;  // Дата создания магазина
+        public DateTime CreatedAt { get; set; } = DateTime.Now;  // Дата создания магазина
 
         // Владелец магазина (ссылка на пользователя, который является владельцем магазина)
         public string OwnerId { get; set; }  // Это будет ключ от IdentityUser
