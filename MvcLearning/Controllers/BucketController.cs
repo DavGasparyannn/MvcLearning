@@ -11,12 +11,10 @@ namespace MvcLearning.Controllers
     {
         private readonly BucketService _bucketService;
         private readonly UserManager<User> _userManager;
-        private readonly ProductService _productService;
-        public BucketController(BucketService bucketService, UserManager<User> userManager, ProductService productService)
+        public BucketController(BucketService bucketService, UserManager<User> userManager)
         {
             _bucketService = bucketService;
             _userManager = userManager;
-            _productService = productService;
         }
         public async Task<IActionResult> Index()
         {
@@ -36,6 +34,23 @@ namespace MvcLearning.Controllers
 
             await _bucketService.AddProductToBucket(user.Id, productId, quantity);
             return RedirectToAction("Index");
+        }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> UpdateQuantityExact([FromBody] QuantityUpdateDTO dto)
+        {
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null) return Unauthorized();
+
+            var result = await _bucketService.SetProductQuantityAsync(user.Id, dto.ProductId, dto.Quantity);
+            if (!result.Success) return BadRequest(result.Message);
+
+            return Json(new
+            {
+                quantity = result.NewQuantity,
+                subtotal = result.Subtotal.ToString("C"),
+                total = result.Total.ToString("C")
+            });
         }
     }
 }

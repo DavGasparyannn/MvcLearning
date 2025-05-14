@@ -43,6 +43,10 @@ namespace MvcLearning.Data.Repositories
              _context.Buckets.Update(bucket);
             await _context.SaveChangesAsync(token);
         }
+        public async Task SaveChangesAsync()
+        {
+             await _context.SaveChangesAsync();
+        }
     }
     
 }

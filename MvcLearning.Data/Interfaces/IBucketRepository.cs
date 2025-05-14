@@ -12,5 +12,6 @@ namespace MvcLearning.Data.Interfaces
         Task AddBucketToUser(string userId, CancellationToken token);
         Task<Bucket> GetBucketByUserId(string userId, CancellationToken token);
         Task UpdateBucketAsync(Bucket bucket, CancellationToken token);
+        Task SaveChangesAsync();
     }
 }

@@ -31,5 +31,22 @@ namespace MvcLearning.Business.Services
 
             await _productRepository.AddProductToBucket(bucket.Id, productId, quantity, token);
         }
+
+        public async Task<(bool Success, int NewQuantity, decimal Subtotal, decimal Total, string Message)> SetProductQuantityAsync(string userId, Guid productId, int quantity,CancellationToken token = default)
+        {
+            if (quantity < 1) return (false, 0, 0, 0, "Invalid quantity");
+
+            var bucket = await _bucketRepository.GetBucketByUserId(userId,token);
+            var item = bucket?.BucketProducts?.FirstOrDefault(bp => bp.ProductId == productId);
+            if (item == null) return (false, 0, 0, 0, "Item not found");
+
+            item.Quantity = quantity;
+            await _bucketRepository.SaveChangesAsync();
+
+            var subtotal = (item.Product?.Price ?? 0) * quantity;
+            var total = bucket.BucketProducts.Sum(bp => (bp.Product?.Price ?? 0) * bp.Quantity);
+
+            return (true, quantity, subtotal, total, "Updated");
+        }
     }
 }

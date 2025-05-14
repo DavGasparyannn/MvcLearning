@@ -1,10 +1,12 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using MvcLearning.Business.Services;
 using MvcLearning.Data.Entities;
 
 namespace MvcLearning.Controllers
 {
+    [Authorize]
     public class WalletController : Controller
     {
         private readonly UserManager<User> _userManager;
