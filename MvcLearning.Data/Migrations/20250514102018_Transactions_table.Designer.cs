@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using MvcLearning.Data;
 
@@ -11,9 +12,11 @@ using MvcLearning.Data;
 namespace MvcLearning.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250514102018_Transactions_table")]
+    partial class Transactions_table
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -66,7 +69,7 @@ namespace MvcLearning.Data.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "84bf1f2f-4b9c-4c36-916f-1ad9cacdbfa6",
+                            Id = "a953c9cb-a783-4af2-b228-5a6ca10a9b85",
                             Name = "ShopOwner",
                             NormalizedName = "SHOPOWNER"
                         });
@@ -391,7 +394,7 @@ namespace MvcLearning.Data.Migrations
                     b.Property<string>("OrderId")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid?>("OrderId1")
+                    b.Property<Guid>("OrderId1")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Type")
@@ -671,7 +674,9 @@ namespace MvcLearning.Data.Migrations
                 {
                     b.HasOne("MvcLearning.Data.Entities.Order", "Order")
                         .WithMany()
-                        .HasForeignKey("OrderId1");
+                        .HasForeignKey("OrderId1")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("MvcLearning.Data.Entities.User", "User")
                         .WithMany("Transactions")

@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Identity.Client;
 using MvcLearning.Data.Entities;
 
 namespace MvcLearning.Data
@@ -18,6 +19,7 @@ namespace MvcLearning.Data
         public DbSet<Shop> Shops { get; set; }
         public DbSet<OrderItem> OrderItems { get; set; }
         public DbSet<BucketProduct> BucketProducts { get; set; }
+        public DbSet<Transaction> Transactions { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

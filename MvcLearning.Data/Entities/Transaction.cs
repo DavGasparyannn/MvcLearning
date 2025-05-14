@@ -14,7 +14,7 @@ namespace MvcLearning.Data.Entities
         public string UserId { get; set; }
         public User User { get; set; }
         public string? OrderId { get; set; }
-        public Order Order { get; set; }
+        public Order? Order { get; set; }
         public string Description { get; set; } = string.Empty;
         public decimal Amount { get; set; }
         public DateTime CreatedAt { get; set; } = DateTime.Now;

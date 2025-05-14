@@ -1,0 +1,53 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity;
+using MvcLearning.Data.Entities;
+using MvcLearning.Data.Interfaces;
+
+namespace MvcLearning.Data.Repositories
+{
+    public class TransactionRepository : ITransactionRepository
+    {
+        private readonly ApplicationDbContext _context;
+        private readonly UserManager<User> _userManager;
+        public TransactionRepository(ApplicationDbContext context, UserManager<User> userManager)
+        {
+            _context = context;
+            _userManager = userManager;
+        }
+        public async Task AddMoneyToUserById(string userId, decimal amount, string? description = null, CancellationToken token = default)
+        {
+            await using var dbTransaction = await _context.Database.BeginTransactionAsync(token);
+            try
+            {
+                var user = await _userManager.FindByIdAsync(userId);
+                if (user == null)
+                    throw new Exception("User not found");
+
+                user.Balance += amount;
+                var transaction = new Transaction
+                {
+                    Id = Guid.NewGuid(),
+                    Type = Enums.TransactionType.Deposit,
+                    UserId = user.Id,
+                    Description = description ?? $"Deposit of amount {amount}",
+                    Amount = amount,
+                    CreatedAt = DateTime.Now
+                };
+                await _context.Transactions.AddAsync(transaction);
+                await _context.SaveChangesAsync(token);
+                await dbTransaction.CommitAsync(token);
+            }
+            catch (Exception ex)
+            {
+                await dbTransaction.RollbackAsync(token);
+                throw new Exception("Error while adding money to user", ex);
+                throw;
+
+            }
+        }
+    }
+}
