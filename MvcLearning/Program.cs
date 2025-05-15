@@ -36,6 +36,7 @@ builder.Services.AddScoped<ShopService>();
 builder.Services.AddScoped<BucketService>();
 builder.Services.AddScoped<OrderService>();
 builder.Services.AddScoped<BalanceService>();
+builder.Services.AddScoped<ImageService>();
 
 builder.Services.AddRazorPages();
 

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using MvcLearning.Data.Entities.Images;
 
 namespace MvcLearning.Data.Entities
 {
@@ -15,10 +16,10 @@ namespace MvcLearning.Data.Entities
         public DateTime CreatedAt { get; set; } = DateTime.Now;
         public DateTime UpdatedAt { get; set; } = DateTime.Now;
         public bool IsDeleted { get; set; } = false;
-        public List<string>? ImageUrls { get; set; }
         public Guid ShopId { get; set; }
         public Shop Shop { get; set; }
         public Guid CategoryId { get; set; }
+        public List<ProductImage>? Images { get; set; }
         public List<Category>? Categories { get; set; }
         public List<Bucket>? Buckets { get; set; }
         public List<OrderItem> OrderItems { get; set; }

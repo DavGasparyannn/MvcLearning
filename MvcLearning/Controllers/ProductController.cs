@@ -28,13 +28,20 @@ namespace MvcLearning.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(ProductModel model, Guid shopId, CancellationToken token = default)
         {
-                var shop = await _shopService.GetShopAsync(shopId);
+
+            var shop = await _shopService.GetShopAsync(shopId);
             if (!ModelState.IsValid)
             {
                 ViewData["ShopId"] = shop?.Id;
                 ViewData["UserId"] = shop!.OwnerId;
                 return View(model);
             }
+            if (model.UploadedImages != null && model.UploadedImages.Count > 5)
+            {
+                ModelState.AddModelError("UploadedImages", "Можно загрузить максимум 5 изображений.");
+                return View(model);
+            }
+
 
             try
             {
@@ -101,7 +108,7 @@ namespace MvcLearning.Controllers
                 Name = product.Name,
                 Description = product.Description,
                 Price = product.Price,
-                ImageUrls = product.ImageUrls
+                Images = product.Images
             };
             return View(model);
         }
