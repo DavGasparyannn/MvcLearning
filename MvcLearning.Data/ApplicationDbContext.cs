@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Identity.Client;
 using MvcLearning.Data.Entities;
+using MvcLearning.Data.Entities.Images;
 
 namespace MvcLearning.Data
 {
@@ -20,6 +21,7 @@ namespace MvcLearning.Data
         public DbSet<OrderItem> OrderItems { get; set; }
         public DbSet<BucketProduct> BucketProducts { get; set; }
         public DbSet<Transaction> Transactions { get; set; }
+        public DbSet<ProductImage> ProductImages { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -102,6 +104,12 @@ namespace MvcLearning.Data
                     "ShopCustomers",
                     j => j.HasOne<User>().WithMany().HasForeignKey("CustomersId").OnDelete(DeleteBehavior.Cascade),
                     j => j.HasOne<Shop>().WithMany().HasForeignKey("ShopId").OnDelete(DeleteBehavior.NoAction));
+            // Определяем связь Product - ProductImages (1 к многим)
+            modelBuilder.Entity<ProductImage>()
+        .HasOne(img => img.Product)
+        .WithMany(p => p.Images)
+        .HasForeignKey(img => img.ProductId)
+        .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<Transaction>(entity =>
             {

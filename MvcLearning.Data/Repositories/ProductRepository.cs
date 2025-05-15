@@ -42,6 +42,7 @@ namespace MvcLearning.Data.Repositories
             return await _context.Products
                 .Include(p => p.Shop)
                 .Include(p => p.Shop.Owner)
+                .Include(p => p.Images)
                 .ToListAsync(token);
         }
 
@@ -50,6 +51,7 @@ namespace MvcLearning.Data.Repositories
             return await _context.Products
                 .Include(p => p.Shop)
                 .Include(p => p.Shop.Owner)
+                .Include(p => p.Images)   
                 .FirstOrDefaultAsync(p => p.Id == id,token);
         }
         public async Task AddProductToBucket(Guid bucketId, Guid productId, int quantity = 1 ,CancellationToken token = default) {

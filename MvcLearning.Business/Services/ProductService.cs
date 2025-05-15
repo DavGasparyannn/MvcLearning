@@ -34,8 +34,6 @@ namespace MvcLearning.Business.Services
                 UpdatedAt = DateTime.UtcNow,
                 Images = new List<ProductImage>()
             };
-            await _productRepository.AddAsync(product, token);
-            await _shopRepository.AddProductToShopAsync(shopId, product, token);
 
             if (productAddingModel.UploadedImages != null)
             {
@@ -48,6 +46,8 @@ namespace MvcLearning.Business.Services
 
                 await _imageService.AddImageToProduct(productAddingModel, imagesPath, product, shopId.ToString(), token);
             }
+            await _productRepository.AddAsync(product, token);
+            await _shopRepository.AddProductToShopAsync(shopId, product, token);
         }
 
         public async Task<Product?> GetProduct(Guid productId, CancellationToken token = default)
